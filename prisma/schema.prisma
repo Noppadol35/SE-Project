@@ -1,0 +1,74 @@
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id        Int      @id @default(autoincrement())
+  name      String?
+  password  String
+  email     String   @unique
+  phone     String   @unique
+  image     String?
+  position  Role     @default(WAITER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Table{
+  id        Int     @id @default(autoincrement())
+  number    Int     @unique
+  capacity  Int
+  status    Status  @default(IDLE)
+  order     Order[]
+}
+
+model Menu{
+  id         Int     @id @default(autoincrement())
+  name       String  @unique
+  price      Float
+  category   String
+  order      Order[]
+}
+
+model Order{
+  id        Int     @id @default(autoincrement())
+  quantity  Int
+  tableID   Int     @map("table_id")
+  table     Table   @relation(fields: [tableID], references:[id])
+  menuID    Int     @map("menu_id")
+  menu      Menu    @relation(fields: [menuID], references:[id])
+}
+
+model Bill{
+  id        Int    @id @default(autoincrement())
+  price     Float
+  guestID   Int    @map("guest_id")
+  guest     Guest  @relation(fields: [guestID], references:[id])
+}
+
+model Guest{
+  id        Int    @id @default(autoincrement())
+  start     DateTime
+  end       DateTime
+  bill      Bill[]
+}
+
+enum Role{
+  MANAGER
+  CHEF
+  WAITER
+}
+
+enum Status{
+  IDLE
+  EATING
+  PAID
+}
+

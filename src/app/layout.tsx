@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import SessionProvider from "./components/sessionProvider";
-import {getServerSession} from "next-auth";
-
+import SessionProvider from "./components/SessionProvider";
+import { getServerSession } from "next-auth";
+import Navbar from ".././components/Navbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,7 +21,13 @@ export default async function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionProvider session={session}>{children}</SessionProvider>
+        
+        <SessionProvider session={session}>
+          <main className="h-screen flex flex-col justify-center items-center">
+            <Navbar />
+            {children}
+          </main>
+        </SessionProvider>
       </body>
     </html>
   );

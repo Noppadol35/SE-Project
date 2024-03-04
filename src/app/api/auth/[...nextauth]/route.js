@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import GoogleProvider from "next-auth/providers/google";
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcrypt'
 import { PrismaAdapter } from '@auth/prisma-adapter'
@@ -22,18 +23,31 @@ export const authOptions = {
 
         if (
           user &&
-          (await bcrypt.compare(credentials.password, user.password))
+          (bcrypt.compare(credentials.password, user.password))
         ) {
           return {
             id: user.id,
             name: user.name,
-            email: user.email
+            email: user.email,
+            position: user.position
           }
         } else {
           throw new Error('Invalid email or password')
         }
       },
-    })
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: `${profile.given_name} ${profile.family_name}`,
+          email: profile.email,
+          image: profile.picture,
+        }
+      },
+    }),
   ],
   adapter: PrismaAdapter(prisma),
   session: {
@@ -43,15 +57,21 @@ export const authOptions = {
     jwt: async ({ token, user }) => {
       if (user) {
         token.id = user.id
+        token.position = user.position
       }
       return token
     },
     session: async ({ session, token }) => {
       if (session.user) {
         session.user.id = token.id
+        session.user.position = token.position
+        session.user.image = token.picture
       }
       return session
-    }
+    },
+    async redirect({baseUrl}){
+      return `${baseUrl}/profile`
+    },
   },
 }
 

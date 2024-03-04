@@ -60,6 +60,12 @@ export default function SignIn() {
           className="w-full bg-blue-500 text-white py-2 rounded mb-4">
           Login
         </button>
+        <button
+          onClick={() => signIn("google")}
+          className="w-full bg-red-500 text-white py-2 rounded"
+        >
+          Sign in with Google
+        </button>
       </form>
     </div>
   );

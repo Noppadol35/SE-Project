@@ -1,5 +1,3 @@
-
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,66 +7,86 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
-  id        Int      @id @default(autoincrement())
-  name      String?
-  password  String
-  email     String   @unique
-  phone     String   @unique
-  image     String?
-  position  Role     @default(WAITER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model User {
+  id            Int       @id @default(autoincrement())
+  name          String?
+  password      String?
+  email         String    @unique
+  phone         String?
+  image         String?
+  position      Role      @default(WAITER)
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  account       Account[]
 }
 
-model Table{
-  id        Int     @id @default(autoincrement())
-  number    Int     @unique
-  capacity  Int
-  status    Status  @default(IDLE)
-  order     Order[]
+model Account {
+  id                String  @id @default(cuid())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
 }
 
-model Menu{
-  id         Int     @id @default(autoincrement())
-  name       String  @unique
-  price      Float
-  category   String
-  order      Order[]
+model Table {
+  id       Int     @id @default(autoincrement())
+  number   Int     @unique
+  capacity Int
+  status   Status  @default(IDLE)
+  order    Order[]
 }
 
-model Order{
-  id        Int     @id @default(autoincrement())
-  quantity  Int
-  tableID   Int     @map("table_id")
-  table     Table   @relation(fields: [tableID], references:[id])
-  menuID    Int     @map("menu_id")
-  menu      Menu    @relation(fields: [menuID], references:[id])
+model Menu {
+  id       Int     @id @default(autoincrement())
+  name     String  @unique
+  price    Float
+  category String
+  order    Order[]
 }
 
-model Bill{
-  id        Int    @id @default(autoincrement())
-  price     Float
-  guestID   Int    @map("guest_id")
-  guest     Guest  @relation(fields: [guestID], references:[id])
+model Order {
+  id       Int   @id @default(autoincrement())
+  quantity Int
+  tableID  Int   @map("table_id")
+  table    Table @relation(fields: [tableID], references: [id], onDelete: Cascade)
+  menuID   Int   @map("menu_id")
+  menu     Menu  @relation(fields: [menuID], references: [id], onDelete: Cascade)
 }
 
-model Guest{
-  id        Int    @id @default(autoincrement())
-  start     DateTime
-  end       DateTime
-  bill      Bill[]
+model Bill {
+  id      Int   @id @default(autoincrement())
+  price   Float
+  guestID Int   @map("guest_id")
+  guest   Guest @relation(fields: [guestID], references: [id], onDelete: Cascade)
 }
 
-enum Role{
+model Guest {
+  id    Int      @id @default(autoincrement())
+  start DateTime
+  end   DateTime
+  bill  Bill[]
+}
+
+enum Role {
   MANAGER
   CHEF
   WAITER
 }
 
-enum Status{
+enum Status {
   IDLE
   EATING
   PAID
 }
-

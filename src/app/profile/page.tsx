@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -15,16 +15,22 @@ export default function Profile() {
     session.user && (
       <div className="flex h-screen items-center justify-center">
         <div className="bg-white p-6 rounded-md shadow-md">
-        <h1>Profile</h1>
-        <p>Welcome, {session.user.name}</p>
-        <p>Email: {session.user.email}</p>
-        <p>Position: {session.user.position}</p>
-        <button
-          onClick={() => signOut({ callbackUrl: "/" })}
-          className="w-full bg-blue-500 text-white py-2 rounded"
-        >
-          Logout
-        </button>
+          <div>
+            <img
+              src ={session.user.image}
+              className="w-20 h-20 rounded-full mx-auto"
+            />
+          </div>
+          <h1>Profile</h1>
+          <p>Welcome, {session.user.name}</p>
+          <p>Email: {session.user.email}</p>
+          <p>Position: {session.user.position}</p>
+          <button
+            onClick={() => signOut({ callbackUrl: "/" })}
+            className="w-full bg-blue-500 text-white py-2 rounded"
+          >
+            Logout
+          </button>
         </div>
       </div>
     )

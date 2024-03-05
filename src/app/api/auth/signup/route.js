@@ -1,3 +1,4 @@
+'use server'
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcrypt'
 
@@ -5,7 +6,7 @@ const prisma = new PrismaClient()
 
 export async function POST(request) {
     try {
-        const { name, password, email } = await request.json()
+        const { name, password, email, phone } = await request.json()
         const hashedPassword = await bcrypt.hash(password, 10);
 
 
@@ -14,7 +15,8 @@ export async function POST(request) {
             {
                 name,
                 password: hashedPassword,
-                email
+                email,
+                phone
             },
         })
         return Response.json({ message: 'User created', newUser });

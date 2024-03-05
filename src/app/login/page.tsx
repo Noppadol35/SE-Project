@@ -15,17 +15,17 @@ export default function SignIn() {
         redirect: false,
         email: email,
         password: password,
-      })
+      });
 
-      if(result?.error){
-        console.log(result?.error)
+      if (result?.error) {
+        console.log(result?.error);
       } else {
-        router.push("/profile")
+        router.push("/profile");
       }
     } catch (error) {
-        console.error("An unexpected error happened:", error);
+      console.error("An unexpected error happened:", error);
     }
-  }
+  };
 
   return (
     <div className="flex h-screen items-center justify-center">
@@ -57,7 +57,8 @@ export default function SignIn() {
         </div>
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded mb-4">
+          className="w-full bg-blue-500 text-white py-2 rounded mb-4"
+        >
           Login
         </button>
         <button
@@ -66,6 +67,12 @@ export default function SignIn() {
         >
           Sign in with Google
         </button>
+        <p className=" flex items-center justify-between mt-5 ">
+          <label >New account?</label>
+          <a href="/signup" className="text-blue-500" >
+            Sign up
+          </a>
+        </p>
       </form>
     </div>
   );

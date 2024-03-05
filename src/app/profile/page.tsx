@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-export default function Profile() {
+const Profile = () => {
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -36,3 +36,5 @@ export default function Profile() {
     )
   );
 }
+
+export default Profile;

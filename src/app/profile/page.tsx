@@ -17,7 +17,7 @@ const Profile = () => {
         <div className="bg-white p-6 rounded-md shadow-md">
           <div>
             <img
-              src ={session.user.image}
+              src ={session.user.image} referrerPolicy="no-referrer"
               className="w-20 h-20 rounded-full mx-auto"
             />
           </div>

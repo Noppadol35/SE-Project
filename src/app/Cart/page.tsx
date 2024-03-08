@@ -1,34 +1,29 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import {
   AppBar,
   Toolbar,
   Typography,
   Button,
-  Box,
-  ThemeProvider,
   IconButton,
-  Menu,
-  MenuItem,
-  Link,
   Paper,
   Stack,
-  Divider,
-  Popover,
-  Container,
   Grid,
-  CssBaseline,
-  Drawer,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
+  Container,
+  Modal,
+  Box,
 } from "@mui/material";
-import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+
+import Tabmenu from "./components/Tabmenu";
+import BTnavigation from "./components/BTnavigation";
+
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ClearIcon from "@mui/icons-material/Clear";
 import { styled } from "@mui/material/styles";
-import MenuIcon from "@mui/icons-material/Menu";
+import DeleteIcon from "@mui/icons-material/Delete";
+import CreateIcon from "@mui/icons-material/Create";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -77,6 +72,12 @@ const fooddetail = [
     details: "เป็ดจากฮอกไกโด",
     price: 50.0,
   },
+  {
+    id: 7,
+    name: "ข้าวหน้าปลาทอด",
+    details: "ปลาจากแม่กลอง",
+    price: 60.0,
+  },
 ];
 
 const DeleteButton = styled(IconButton)(({ theme }) => ({
@@ -86,47 +87,110 @@ const DeleteButton = styled(IconButton)(({ theme }) => ({
   right: "4px" /* ปรับระยะห่างขอบขวาของปุ่ม */,
 }));
 
-export default function Cart() {
-  return (
-    <>
-      {/* Navbar */}
-      <AppBar
-        position="static"
-        sx={{ backgroundColor: "brown", width: "100%", height: "40px" }}
-      >
-        <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 2 }}>
-            <IconButton
-              onClick={() => (window.location.href = "/Menu")}
-              color="inherit"
-              aria-label="previous page"
-              sx={{ mt: -3.5 }}
-            >
-              <ArrowBackIcon />
-              {/* ปุ่มย้อนกลับ*/}
-            </IconButton>
-          </Typography>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 0, mt: -2.5 }}
-          >
-            <h3>โต๊ะที่ 199</h3>
-          </Typography>
-        </Toolbar>
-      </AppBar>
+const style = {
+  position: "absolute" as "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
 
-      <Stack spacing={2}>
-        {fooddetail.map((food) => (
-          <Item>
-            {food.name}
-            {food.price}
-            <DeleteButton color="inherit" aria-label="delete">
-              <ClearIcon />
-            </DeleteButton>
-          </Item>
-        ))}
-      </Stack>
+export default function Cart() {
+  const [open, setOpen] = React.useState(false);
+  const handleClose = () => setOpen(false);
+  const handleOpen = () => setOpen(true);
+
+  const [openModal1, setOpenModal1] = React.useState(false);
+  const [openModal2, setOpenModal2] = React.useState(false);
+
+  const handleOpenModal1 = () => setOpenModal1(true);
+  const handleCloseModal1 = () => setOpenModal1(false);
+  const handleOpenModal2 = () => setOpenModal2(true);
+  const handleCloseModal2 = () => setOpenModal2(false);
+
+  // ในส่วนของเพิ่มลดจำนวนอาหาร
+  const [count, setCount] = useState(0);
+
+  const handleIncrement = () => {
+    setCount((prevCount) => prevCount + 1);
+  };
+
+  const handleDecrement = () => {
+    setCount((prevCount) => (prevCount > 0 ? prevCount - 1 : 0));
+  };
+
+  return (
+    <div>
+      <Container maxWidth="sm">
+        <Stack spacing={2} sx={{ mt: 10, mb: 1 }}>
+          {fooddetail.map((food) => (
+            <Item key={food.id}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <div style={{ fontSize: "18px" }}>{food.name}</div>
+                <div style={{ fontSize: "18px" }}>{food.price}</div>
+                <div style={{ marginLeft: "auto" }}>
+                  {/* ปุ่มเข้าหน้าเพิ่มและลดจำนวนเมนู */}
+                  <Button onClick={handleOpen}>
+                    <CreateIcon sx={{ color: "black" }} />
+                  </Button>
+                  <Modal
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                    sx={{
+                      "& .MuiBackdrop-root": {
+                        backgroundColor: "rgba(0, 0, 0, 0.2)", // พื้นหลังตอนกด modal
+                      },
+                    }}
+                  >
+                    <Box sx={style}>
+                      {/* ปุ่มเพิ่มและลดจำนวนเมนู */}
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Typography variant="h6">Quantity: {count}</Typography>
+                        <IconButton
+                          onClick={handleDecrement}
+                          aria-label="decrement"
+                        >
+                          <RemoveIcon />
+                        </IconButton>
+                        <IconButton
+                          onClick={handleIncrement}
+                          aria-label="increment"
+                        >
+                          <AddIcon />
+                        </IconButton>
+                      </div>
+                    </Box>
+                  </Modal>
+
+                  {/* ปุ่มลบเมนู */}
+                  <IconButton aria-label="delete" size="small">
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </div>
+              </div>
+            </Item>
+          ))}
+        </Stack>
+      </Container>
+
       <Grid
         container
         direction="row"
@@ -137,7 +201,7 @@ export default function Cart() {
           variant="contained"
           color="primary"
           sx={{
-            mt: 2,
+            mt: 0,
             backgroundColor: "#ba000d",
             "&:hover": {
               backgroundColor: "#ff7961",
@@ -147,6 +211,12 @@ export default function Cart() {
           send order
         </Button>
       </Grid>
-    </>
+      <Tabmenu />
+      <BTnavigation />
+
+      {/* <Stack direction="row" spacing={2} alignItems="center">
+
+    </Stack> */}
+    </div>
   );
 }

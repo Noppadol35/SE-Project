@@ -14,7 +14,7 @@ model User {
   email         String    @unique
   phone         String?
   image         String?
-  position      Role      @default(WAITER)
+  role          Role      @default(WAITER)
   emailVerified DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -83,6 +83,7 @@ enum Role {
   MANAGER
   CHEF
   WAITER
+  CASHIER
 }
 
 enum Status {

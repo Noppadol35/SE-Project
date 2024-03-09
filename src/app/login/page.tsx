@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -7,6 +7,17 @@ export default function SignIn() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedSession = localStorage.getItem("next-auth.session");
+    if (storedSession !== null) {
+      const session = JSON.parse(storedSession);
+      if (session) {
+        setUser(session.user);
+      }
+    }
+  }, []);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -17,14 +28,41 @@ export default function SignIn() {
         password: password,
       });
 
-      if (result?.error) {
-        console.log(result?.error);
-      } else {
-        router.push("/profile");
+      const storedSession = localStorage.getItem("next-auth.session");
+
+      if (storedSession !== null) {
+        const session = JSON.parse(storedSession);
+
+        if (session && session.user) {
+          const userPosition = session.user.role;
+          const redirectedUrl = getRedirectUrl(userPosition);
+
+          if (redirectedUrl) {
+            router.push(redirectedUrl);
+          } else {
+            console.warn(
+              "NO REDIRECT URL FOUND FOR USER POSITION: ",
+              userPosition
+            );
+          }
+        }
       }
     } catch (error) {
       console.error("An unexpected error happened:", error);
     }
+  };
+
+  type Role = "MANAGER" | "CHEF" | "WAITER" | "CASHIER";
+
+  const getRedirectUrl = (role: Role) => {
+    const redirectMap: Record<Role, string> = {
+      MANAGER: "/dashboard/manager",
+      CHEF: "/dashboard/chef",
+      WAITER: "/dashboard/waiter",
+      CASHIER: "/dashboard/cashier",
+    };
+
+    return redirectMap[role] || "/";
   };
 
   return (
@@ -69,8 +107,8 @@ export default function SignIn() {
           Sign in with Google
         </button>
         <p className=" flex items-center justify-between mt-5 ">
-          <label >New account?</label>
-          <a href="/signup" className="text-blue-500" >
+          <label>New account?</label>
+          <a href="/signup" className="text-blue-500">
             Sign up
           </a>
         </p>

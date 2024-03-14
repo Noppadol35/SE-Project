@@ -2,7 +2,6 @@ import * as React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
-import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
@@ -10,16 +9,20 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
 
 interface Props {
   window?: () => Window;
 }
 
 const drawerWidth = 240;
-const navItems = [<ArrowBackIcon />] as const;
 
 export default function DrawerAppBar(props: Props) {
   const { window } = props;
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm")); // ตรวจสอบหน้าจอขนาดเล็ก
+
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   const handleDrawerToggle = () => {
@@ -29,14 +32,9 @@ export default function DrawerAppBar(props: Props) {
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <Typography variant="h6" sx={{ my: 2 }}>
-        MUI
+        MENU
       </Typography>
-      <Divider />
-      <List>
-        <IconButton aria-label="back" sx={{ color: "white" }}>
-          <ArrowBackIcon />
-        </IconButton>
-      </List>
+      <List>for menu</List>
     </Box>
   );
 
@@ -58,21 +56,17 @@ export default function DrawerAppBar(props: Props) {
             <MenuIcon />
           </IconButton>
 
-          {/* จะเอาทำปุ่มย้อนกลับ */}
-          <Box sx={{ display: { xs: "none", sm: "block" } }}>
+          {/* แสดงทั้งในหน้าจอใหญ่และหน้าจอเล็ก */}
+          {!isSmallScreen && ( // แสดงเฉพาะในหน้าจอใหญ่
             <IconButton aria-label="back" sx={{ color: "white" }}>
               <ArrowBackIcon />
+              {/*ปุ่มย้อนกลับ*/}
             </IconButton>
-          </Box>
-
+          )}
           <Typography
             variant="h6"
             component="div"
-            sx={{
-              flexGrow: 1,
-              textAlign: "center",
-              display: { xs: "none", sm: "block" },
-            }}
+            sx={{ flexGrow: 1, textAlign: "center" }}
           >
             โต๊ะที่ 199
           </Typography>

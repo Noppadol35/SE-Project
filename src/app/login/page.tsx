@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -7,111 +7,81 @@ export default function SignIn() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const storedSession = localStorage.getItem("next-auth.session");
-    if (storedSession !== null) {
-      const session = JSON.parse(storedSession);
-      if (session) {
-        setUser(session.user);
-      }
-    }
-  }, []);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     try {
       const result = await signIn("credentials", {
         redirect: false,
-        email: email,
-        password: password,
+        email,
+        password,
       });
+      console.log("result", result);
 
-      const storedSession = localStorage.getItem("next-auth.session");
-
-      if (storedSession !== null) {
-        const session = JSON.parse(storedSession);
-
-        if (session && session.user) {
-          const userPosition = session.user.role;
-          const redirectedUrl = getRedirectUrl(userPosition);
-
-          if (redirectedUrl) {
-            router.push(redirectedUrl);
-          } else {
-            console.warn(
-              "NO REDIRECT URL FOUND FOR USER POSITION: ",
-              userPosition
-            );
-          }
-        }
+      if (!result) return;
+      if (result.error === null) {
+        alert("Logged in successfully!");
+      } else {
+        alert(result.error);
       }
     } catch (error) {
-      console.error("An unexpected error happened:", error);
+      console.log("error", error);
     }
   };
 
-  type Role = "MANAGER" | "CHEF" | "WAITER" | "CASHIER";
-
-  const getRedirectUrl = (role: Role) => {
-    const redirectMap: Record<Role, string> = {
-      MANAGER: "/dashboard/manager",
-      CHEF: "/dashboard/chef",
-      WAITER: "/dashboard/waiter",
-      CASHIER: "/dashboard/cashier",
-    };
-
-    return redirectMap[role] || "/";
-  };
-
   return (
-    <div className="flex h-screen items-center justify-center">
+    <div className="flex h-screen items-center justify-center bg-gray-100">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-md shadow-md"
+        className="bg-white p-8 rounded-md shadow-md flex flex-col space-y-4"
       >
-        {/* <Users /> */}
+        <h2 className="text-2xl font-semibold text-center">Sign In</h2>
         <div className="mb-4">
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email" className="block font-semibold mb-2">
+            Email
+          </label>
           <input
             id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full border border-gray-300 px-3 py-2 rounded"
+            className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-blue-500"
           />
         </div>
         <div className="mb-4">
-          <label htmlFor="password">Password</label>
+          <label htmlFor="password" className="block font-semibold mb-2">
+            Password
+          </label>
           <input
             id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full border border-gray-300 px-3 py-2 rounded"
+            className="w-full border border-gray-300 px-3 py-2 rounded focus:outline-none focus:border-blue-500"
           />
         </div>
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded mb-4"
+          className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-300"
         >
           Login
         </button>
-        <button
-          onClick={() => signIn("google")}
-          className="w-full bg-red-500 text-white py-2 rounded"
-        >
-          Sign in with Google
-        </button>
-        <p className=" flex items-center justify-between mt-5 ">
-          <label>New account?</label>
-          <a href="/signup" className="text-blue-500">
-            Sign up
-          </a>
-        </p>
+        <div className="w-full  items-center justify-center ml-4">
+          <button
+            onClick={() => signIn("google")}
+            className="bg-red-500 text-white py-2 px-6 rounded hover:bg-red-600 transition duration-300"
+          >
+            Sign in with Google
+          </button>
+          <p className="mt-4">
+            <span className="mr-1">Don't have account?</span>
+            <a href="/signup" className="text-blue-500 hover:underline">
+              Sign up
+            </a>
+          </p>
+        </div>
       </form>
     </div>
   );

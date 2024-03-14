@@ -26,12 +26,8 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ message: 'User created', newUser });
-  } catch   {
-    if (Error.code === 'P2002' && Error.meta?.target?.[0] === 'email') {
-      return NextResponse.json({ message: 'This email is already in use' }, { status: 400 });
-    }
-
-    console.error(Error);
+  } catch (error){
+    console.error(error);
 
     return NextResponse.json({ message: 'Something went wrong' }, { status: 500 });
   }

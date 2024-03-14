@@ -24,7 +24,7 @@ const Profile = () => {
           <h1>Profile</h1>
           <p>Welcome, {session.user.name}</p>
           <p>Email: {session.user.email}</p>
-          <p>Position: {session.user.position}</p>
+          <p>Position: {session.user.role}</p>
           <button
             onClick={() => signOut({ callbackUrl: "/" })}
             className="w-full bg-blue-500 text-white py-2 rounded"

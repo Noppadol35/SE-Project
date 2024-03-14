@@ -1,15 +1,9 @@
-"use client";
-import Head from "next/head";
+import React from 'react'
 
-
-const ManageInventory = () => {
+function Manage() {
   return (
-    <>
-      <Head>
-        <title>Manage Inventory</title>
-      </Head>
-    </>
-  );
-};
+    <div>Manage</div>
+  )
+}
 
-export default ManageInventory;
+export default Manage

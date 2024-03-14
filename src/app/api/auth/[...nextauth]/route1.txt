@@ -1,0 +1,107 @@
+import type { NextAuthOptions } from "next-auth"
+import NextAuth from "next-auth"
+import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcrypt';
+import { PrismaAdapter } from '@auth/prisma-adapter';
+
+const prisma = new PrismaClient();
+interface Credentials {
+  email: string;
+  password: string;
+}
+
+interface user {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  password: string;
+}
+
+
+export const authOptions: NextAuthOptions = {
+  providers: [
+
+    CredentialsProvider({
+      async authorize(credentials: Credentials) {
+        const user = await prisma.user.findUnique({
+          where: {
+            email: credentials.email,
+          },
+        });
+        if (user) {
+          const isValid = await bcrypt.compare(credentials.password, user.password);
+          if (isValid) {
+            return {
+              id: user.id,
+              name: user.name,
+              email: user.email,
+              role: user.role,
+            };
+          }
+        }
+        return null;
+      },
+    }),
+    
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      profile(profile) {
+        return {
+          id: profile.sub,
+          name: `${profile.given_name} ${profile.family_name}`,
+          email: profile.email,
+          image: profile.picture,
+        };
+      },
+    }),
+  ],
+  adapter: PrismaAdapter(prisma),
+  session: {
+    strategy: 'jwt',
+  },
+
+  callbacks: {
+    jwt: async ({ token, user }) => {
+      if (user) {              
+        token.id = user.id;
+        token.role = user.role;
+      }
+      return token;
+    },
+    session: async ({ session, token }) => {
+      if (token) {
+        session.user = {
+          id: token.id,
+          role: token.role,
+          image: token.picture,
+        };
+      }
+      return session;
+    },
+
+    // redirect page after login check if role 
+    async redirect({ baseUrl }) {
+      const user = await prisma.user.findUnique({
+        where: { id: 0 },
+      })
+      if (user?.role === 'MANAGER') {
+        return `${baseUrl}/dashboard/manager`;
+      } else if (user?.role === 'CHEF') {
+        return `${baseUrl}/dashboard/chef`;
+      } else if (user?.role === 'WAITER') {
+        return `${baseUrl}/dashboard/waiter`;
+      } else if (user?.role === 'CASHIER') {
+        return `${baseUrl}/dashboard/cashier`;
+      }
+      return baseUrl;
+    },
+  },
+}
+
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST };

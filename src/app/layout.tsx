@@ -1,34 +1,21 @@
 "use client";
+
 import { ReactNode } from "react";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-
-import "src/app/styles/globals.css";
-import SessionProvider from "./components/SessionProvider";
-import Navbar from "./components/Navbar";
-
 import { Jost } from "next/font/google";
 import { ModalsProvider } from "@mantine/modals";
+import { Notifications } from "@mantine/notifications";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ColorSchemeScript, createTheme, MantineProvider } from "@mantine/core";
-
+import "src/app/styles/globals.css";
 import "@mantine/core/styles.css";
+import "@mantine/dropzone/styles.css";
 import "@mantine/notifications/styles.css";
-
-const inter = Inter({ subsets: ["latin"] });
-
-const metadata: Metadata = {
-  title: "QR Menu",
-  description: "Generated QR-Order Menu",
-};
+import { SessionProvider } from "next-auth/react";
+import Navbar from "@/components/Navbar";
 
 type Props = {
   children: ReactNode;
 };
-
-interface RootLayoutProps {
-  children: React.ReactNode;
-}
 
 const jost = Jost({
   weight: ["300", "400", "500", "600", "700"],
@@ -59,18 +46,19 @@ const queryClient = new QueryClient({
   },
 });
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default function Layout({ children }: Props) {
   return (
     <html className={jost.className} lang="en">
       <head>
         <ColorSchemeScript defaultColorScheme="light" />
       </head>
-      <body className={inter.className}>
+      <body>
         <QueryClientProvider client={queryClient}>
           <MantineProvider theme={theme} defaultColorScheme="light">
+            <Notifications />
             <ModalsProvider>
               <SessionProvider>
-                <main className="h-screen flex flex-col justify-center items-center">
+                <main className=" h-screen flex justify-center items-center ">
                   <Navbar />
                   {children}
                 </main>

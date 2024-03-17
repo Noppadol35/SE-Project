@@ -1,10 +1,15 @@
-"use client";
+"use client"
 
-const chefOrder = () => {
-    return (
-        <div>
-            <h1>chefOrder</h1>
+import Home from "./views/home/Home";
+
+export function ChefOrder() {
+  return (
+    <div className="h-full bg-base-200 ">
+      <div className="flex h-[90dvh]">
+        <div className="w-full">
+          < Home />
         </div>
-    )
+      </div>
+    </div>
+  )
 }
-export default chefOrder;

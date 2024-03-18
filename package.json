@@ -21,6 +21,7 @@
     "@mantine/notifications": "^7.6.1",
     "@mui/icons-material": "^5.15.12",
     "@mui/material": "^5.15.12",
+    "@mui/styles": "^5.15.13",
     "@next-auth/prisma-adapter": "^0.4.4-canary.81",
     "@prisma/client": "^5.10.2",
     "@radix-ui/react-slot": "^1.0.2",

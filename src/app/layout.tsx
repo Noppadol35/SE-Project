@@ -58,7 +58,7 @@ export default function Layout({ children }: Props) {
             <Notifications />
             <ModalsProvider>
               <SessionProvider>
-                <main className=" h-screen flex justify-center items-center ">
+                <main className=" h-screen justify-center items-center">
                   <Navbar />
                   {children}
                 </main>

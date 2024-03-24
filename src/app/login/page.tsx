@@ -1,39 +1,45 @@
 "use client";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation"; // Import useRouter from 'next/router' instead of 'next/navigation'
+import { SignInResponse } from "@/types/entity";
 
 export default function SignIn() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false); // State to manage loading state
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    try {
-      const result = await signIn("credentials", {
-        redirect: false,
-        email,
-        password,
-      });
-      console.log("result", result);
-
-      if (!result) return;
-      if (result.error === null) {
-        alert("Logged in successfully!");
+    setLoading(true); // Set loading state to true when form is submitted
+    const data: SignInResponse | undefined = await signIn("credentials", {
+      redirect: false,
+      email,
+      password,
+    });
+    setLoading(false); // Set loading state to false after authentication response
+    if (data && data.session) {
+      const userRole = data.session.user.role;
+      if (userRole === "MANAGER") {
+        router.push("/dashboard/manager");
+      } else if (userRole === "WAITER") {
+        router.push("/dashboard/waiter");
+      } else if (userRole === "CHEF") {
+        router.push("/dashboard/chef");
       } else {
-        alert(result.error);
+        router.push("/");
       }
-    } catch (error) {
-      console.log("error", error);
+    } else {
+      console.error("Authentication failed");
     }
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-gray-100">
+    <div className="flex h-screen items-center justify-center">
       <form
-        onSubmit={handleSubmit}
         className="bg-white p-8 rounded-md shadow-md flex flex-col space-y-4"
+        onSubmit={handleSubmit}
       >
         <h2 className="text-2xl font-semibold text-center">Sign In</h2>
         <div className="mb-4">
@@ -64,24 +70,29 @@ export default function SignIn() {
         </div>
         <button
           type="submit"
-          className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-300"
+          className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-300 relative"
+          disabled={loading} // Disable button when loading is true
         >
-          Login
+          {loading && (
+            <div className="absolute inset-0 bg-gray-600 opacity-50 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+            </div>
+          )}
+          {loading ? "Logging in..." : "Login"}
         </button>
-        <div className="w-full  items-center justify-center ml-4">
-          <button
-            onClick={() => signIn("google")}
-            className="bg-red-500 text-white py-2 px-6 rounded hover:bg-red-600 transition duration-300"
-          >
-            Sign in with Google
-          </button>
-          <p className="mt-4">
-            <span className="mr-1">Don't have account?</span>
-            <a href="/signup" className="text-blue-500 hover:underline">
-              Sign up
-            </a>
-          </p>
-        </div>
+
+        <button
+          onClick={() => signIn("google")}
+          className="bg-red-500 text-white py-2 px-6 rounded hover:bg-red-600 transition duration-300"
+        >
+          Sign in with Google
+        </button>
+        <p className="mt-4">
+          <span className="mr-1">Don't have an account?</span>
+          <a href="/signup" className="text-blue-500 hover:underline">
+            Sign up
+          </a>
+        </p>
       </form>
     </div>
   );

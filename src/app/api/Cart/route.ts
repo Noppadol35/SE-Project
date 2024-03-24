@@ -1,47 +1,33 @@
-import { Menu, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient()
-
-export type Cart = {
-    id: string;
-    quantity: number;
-    tableID: string;
-    menu: Menu;
-}
+const prisma = new PrismaClient();
 
 export async function GET() {
-    //const body = await prisma.order.findMany()
-    const users = await prisma.order.findMany({
+    const ordersWithMenu = await prisma.cart.findMany({
         include: {
-            menu: true,
-        },
+            menu: {
+                select: {
+                    name: true,
+                    price: true
+                }
+            },
+            order: {
+                select: {
+                    quantity: true
+                }
+            }
+        }
     })
-    return Response.json(users as Cart[])
+    return Response.json(ordersWithMenu)
 }
 
-
-// edit quantity in cart
-
-export async function PUT(id: string, data: { quantity: number }) {
-
-    const updatedCart = await prisma.order.update({
-        where: { id },
-        data: {
-            ...data
-        },
-    })
-    return Response.json(updatedCart)
-}
-
-// delete cart
+// delete item in cart
 
 export async function DELETE(id: string) {
-    try {
-        const deletedCart = await prisma.order.delete({
-            where: { id:"" },
-        });
-        return deletedCart;
-    } catch (error) {
-        throw new Error(`Error deleting cart: ${error}`);
-    }
+    const deleteCart = await prisma.cart.delete({
+        where: {
+            id: id
+        }
+    })
+    return Response.json(deleteCart)
 }

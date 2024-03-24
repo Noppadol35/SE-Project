@@ -1,3 +1,4 @@
+
 export type User = {
     id: string;
     email: string;
@@ -19,6 +20,7 @@ export type Menu = {
     price: number;
     image: string;
     category: string;
+    cart: Cart;
 }
 
 export type Table = {
@@ -26,18 +28,41 @@ export type Table = {
     number: number;
     capacity: number;
     status: string;
+    order: Order;
+    cart: Cart;
+    bill: Bill;
 }
 
 export type Cart = {
     id: string;
+    menu: Menu;
+    order: Order;
+    table: Table;
     quantity: number;
-    tableID: string;
-    menu : Menu;
 }
 
 export type Bill = {
     id: string;
     total: number;
-    gustID: string;
+    table: Table;
+    guest: Guest;
+}
+
+export type Guest = {
+    id: string;
+    start: Date;
+    end: Date;
+    bill: Bill;
+}
+
+export type session = {
+    id: string;
+    expires: Date;
+    useId: string;
+    sessionToken: string;
+    accessToken: string;
+    createdAt: Date;
+    updatedAt: Date;
+    user: User;
 }
 

@@ -6,7 +6,7 @@ export async function GET(
   req: Request,
   { params }: { params: { id: string } },
 ) {
-  const postId = Number(params.id)
+  const postId = String(params.id)
   const post = await prisma.table.findUnique({
     where: { 
       id: postId 
@@ -26,14 +26,14 @@ export async function PUT(
 ) {
   try {
     const { capacity,statusId } = await req.json()
-    const postId = Number(params.id)
+    const postId = String(params.id)
     const updatePost = await prisma.table.update({
 
       where: { id: postId },
       data: {
                  
         capacity:Number(capacity),
-        statusId:Number(statusId),          
+        statusId:String(statusId),          
   
     }
     })
@@ -50,7 +50,7 @@ export async function DELETE(
   { params }: { params: { id: string } },
 ) {
   try {
-    const postId = Number(params.id)
+    const postId = String(params.id)
     const deletedPost = await prisma.table.delete({
       where: { id: postId },
     })

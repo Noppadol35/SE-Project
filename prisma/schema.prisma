@@ -62,13 +62,21 @@ model VerificationRequest {
 }
 
 model Table {
-  id       String  @id @default(cuid())
-  number   Int     @unique
-  capacity Int
-  status   Status  @default(IDLE)
-  order    Order[]
-  bill     Bill[]
-  cart     Cart[]
+  id              Int     @id @default(autoincrement())
+  name            String  @unique   
+  capacity        Int?    @default(0)
+  priceperperson  Int?    @default(199)
+  statusId        Int
+  status          Status  @relation(fields: [statusId], references: [id])
+  order           Order[]
+  bill            Bill[]
+  cart            Cart[]
+}
+
+model Status {
+  id  Int   @id @default(autoincrement())
+  name String @unique
+  posts Table[]
 }
 
 model Menu {
@@ -80,10 +88,11 @@ model Menu {
   order    Order[]
 }
 
+
 model Order {
   id       String @id @default(cuid())
   quantity Int
-  tableID  String @map("table_id")
+  tableID  Int    @map("table_id")
   table    Table  @relation(fields: [tableID], references: [id], onDelete: Cascade)
   cart     Cart[]
   menuID   String @map("menu_id")
@@ -94,7 +103,7 @@ model Cart {
   id       String @id @default(cuid())
   menuID   String @map("menu_id")
   orderID  String @map("order_id")
-  tableID  String @map("table_id")
+  tableID  Int    @map("table_id")
   table    Table  @relation(fields: [tableID], references: [id], onDelete: Cascade)
   menu     Menu   @relation(fields: [menuID], references: [id], onDelete: Cascade)
   order    Order  @relation(fields: [orderID], references: [id], onDelete: Cascade)
@@ -103,12 +112,11 @@ model Cart {
 model Bill {
   id      String @id @default(cuid())
   guestID String @map("guest_id")
-  tableID String @map("table_id")
+  tableID Int    @map("table_id")
   total   Float
   guest   Guest  @relation(fields: [guestID], references: [id], onDelete: Cascade)
   table   Table  @relation(fields: [tableID], references: [id], onDelete: Cascade)
 }
-
 model Guest {
   id    String   @id @default(cuid())
   start DateTime
@@ -123,11 +131,6 @@ enum Role {
   CASHIER
 }
 
-enum Status {
-  IDLE
-  EATING
-  PAID
-}
 
 enum Category {
   DRINK

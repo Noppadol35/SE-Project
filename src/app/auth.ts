@@ -5,6 +5,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import bcrypt from 'bcrypt';
 import { PrismaClient } from '@prisma/client';
+import { User  } from "@/types/entity";
 
 const prisma = new PrismaClient();
 
@@ -13,7 +14,9 @@ interface Credentials {
     password: string;
 }
 
-
+interface MyUser extends User {
+    role: string;
+}
 
 export const authOptions: NextAuthOptions = {
     providers: [

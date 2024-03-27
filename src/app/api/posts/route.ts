@@ -47,7 +47,7 @@ export async function POST(request: Request) {
                 
                 name,
                 capacity,          
-                statusId: Number(statusId),
+                statusId: String(statusId),
                 
             }
         })

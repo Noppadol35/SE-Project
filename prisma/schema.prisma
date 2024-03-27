@@ -62,11 +62,11 @@ model VerificationRequest {
 }
 
 model Table {
-  id              Int     @id @default(autoincrement())
+  id              String   @id @default(cuid())
   name            String  @unique   
   capacity        Int?    @default(0)
   priceperperson  Int?    @default(199)
-  statusId        Int
+  statusId        String
   status          Status  @relation(fields: [statusId], references: [id])
   order           Order[]
   bill            Bill[]
@@ -74,7 +74,7 @@ model Table {
 }
 
 model Status {
-  id  Int   @id @default(autoincrement())
+  id  String   @id @default(cuid())
   name String @unique
   posts Table[]
 }
@@ -92,7 +92,7 @@ model Menu {
 model Order {
   id       String @id @default(cuid())
   quantity Int
-  tableID  Int    @map("table_id")
+  tableID  String    @map("table_id")
   table    Table  @relation(fields: [tableID], references: [id], onDelete: Cascade)
   cart     Cart[]
   menuID   String @map("menu_id")
@@ -103,7 +103,7 @@ model Cart {
   id       String @id @default(cuid())
   menuID   String @map("menu_id")
   orderID  String @map("order_id")
-  tableID  Int    @map("table_id")
+  tableID  String    @map("table_id")
   table    Table  @relation(fields: [tableID], references: [id], onDelete: Cascade)
   menu     Menu   @relation(fields: [menuID], references: [id], onDelete: Cascade)
   order    Order  @relation(fields: [orderID], references: [id], onDelete: Cascade)
@@ -112,7 +112,7 @@ model Cart {
 model Bill {
   id      String @id @default(cuid())
   guestID String @map("guest_id")
-  tableID Int    @map("table_id")
+  tableID String    @map("table_id")
   total   Float
   guest   Guest  @relation(fields: [guestID], references: [id], onDelete: Cascade)
   table   Table  @relation(fields: [tableID], references: [id], onDelete: Cascade)

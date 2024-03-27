@@ -66,3 +66,7 @@ export type session = {
     user: User;
 }
 
+export type SignInResponse = {
+    user: User;
+    session: session;
+}

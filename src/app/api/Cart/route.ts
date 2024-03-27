@@ -22,12 +22,3 @@ export async function GET() {
 }
 
 // delete item in cart
-
-export async function DELETE(id: string) {
-    const deleteCart = await prisma.cart.delete({
-        where: {
-            id: id
-        }
-    })
-    return Response.json(deleteCart)
-}

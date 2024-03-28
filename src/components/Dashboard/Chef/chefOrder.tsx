@@ -1,6 +1,6 @@
 "use client"
 
-import Home from "./views/home/Home";
+import Home from "./components/Home";
 
 export function ChefOrder() {
   return (

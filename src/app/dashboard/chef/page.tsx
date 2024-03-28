@@ -8,17 +8,17 @@ import { ChefOrder } from "@/components/Dashboard/Chef/chefOrder";
 
 
 export default function Chef() {
-  const { data: session, status } = useSession();
-  const router = useRouter();
+  // const { data: session, status } = useSession();
+  // const router = useRouter();
 
-  useEffect(() => {
-    if (status === "unauthenticated") router.push("/login");
-  }, [status, router]);
+  // useEffect(() => {
+  //   if (status === "unauthenticated") router.push("/login");
+  // }, [status, router]);
   return (
-    status === "authenticated" &&
-    session.user && (
+    // status === "authenticated" &&
+    // session.user && (
     <div>
       <ChefOrder />
     </div>
-  ));
+  );
 }

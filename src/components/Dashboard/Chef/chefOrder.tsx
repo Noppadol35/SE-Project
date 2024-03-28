@@ -8,6 +8,7 @@ export function ChefOrder() {
       <div className="flex h-[90dvh]">
         <div className="w-full">
           < Home />
+          <p>Order</p>
         </div>
       </div>
     </div>

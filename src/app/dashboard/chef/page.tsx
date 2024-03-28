@@ -17,7 +17,7 @@ export default function Chef() {
   return (
     // status === "authenticated" &&
     // session.user && (
-    <div>
+    <div className="">
       <ChefOrder />
     </div>
   );

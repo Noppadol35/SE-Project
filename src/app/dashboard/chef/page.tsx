@@ -1,9 +1,6 @@
 
 "use client";
 import { ChefOrder } from "@/components/Dashboard/Chef/chefOrder";
-
-
-
 export default function Chef() {
   return (
     <div>

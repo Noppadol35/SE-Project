@@ -9,14 +9,7 @@ import { User  } from "@/types/entity";
 
 const prisma = new PrismaClient();
 
-interface Credentials {
-    email: string;
-    password: string;
-}
 
-interface MyUser extends User {
-    role: string;
-}
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -46,7 +39,6 @@ export const authOptions: NextAuthOptions = {
                     id: user.id,
                     name: user.name,
                     email: user.email,
-                    role: user.role,
                 };
             },
         }),
@@ -73,7 +65,6 @@ export const authOptions: NextAuthOptions = {
         jwt: async ({ token, user }) => {
             if (user) {
                 token.id = user.id;
-                
             }
             return token;
         },

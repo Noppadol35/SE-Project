@@ -1,37 +1,40 @@
 "use client";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation"; // Import useRouter from 'next/router' instead of 'next/navigation'
-import { SignInResponse } from "@/types/entity";
+import { useRouter } from "next/navigation";
+import { User } from "@/types/entity";
 
 export default function SignIn() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false); // State to manage loading state
+  const [loading, setLoading] = useState(false); // เพิ่มตัวแปรสถานะ loading
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true); // Set loading state to true when form is submitted
-    const data: SignInResponse | undefined = await signIn("credentials", {
-      redirect: false,
-      email,
-      password,
-    });
-    setLoading(false); // Set loading state to false after authentication response
-    if (data && data.session) {
-      const userRole = data.session.user.role;
-      if (userRole === "MANAGER") {
-        router.push("/dashboard/manager");
-      } else if (userRole === "WAITER") {
-        router.push("/dashboard/waiter");
-      } else if (userRole === "CHEF") {
-        router.push("/dashboard/chef");
+    setLoading(true); // เริ่มต้นโหลดข้อมูล
+
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+      });
+
+      if (result?.error) {
+        alert(result.error);
+        console.error(result.error);
       } else {
-        router.push("/");
+        const response = result as unknown as User;
+        if (response.role === "CHEF") {
+          router.push("dashboard/chef");
+        } else {
+          router.push("/profile");
+        }
       }
-    } else {
-      console.error("Authentication failed");
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false); // สิ้นสุดการโหลดข้อมูล
     }
   };
 
@@ -71,7 +74,7 @@ export default function SignIn() {
         <button
           type="submit"
           className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-300 relative"
-          disabled={loading} // Disable button when loading is true
+          disabled={loading} // ปรับ disabled attribute ของปุ่มตามสถานะ loading
         >
           {loading && (
             <div className="absolute inset-0 bg-gray-600 opacity-50 flex items-center justify-center">

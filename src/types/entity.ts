@@ -12,6 +12,7 @@ export type Order = {
     quantity: number;
     tableID: string;
     menu : Menu;
+    status: string;
 }
 
 export type Menu = {
@@ -21,6 +22,7 @@ export type Menu = {
     image: string;
     category: string;
     cart: Cart;
+    status: string;
 }
 
 export type Table = {
@@ -39,6 +41,7 @@ export type Cart = {
     order: Order;
     table: Table;
     quantity: number;
+    status: string;
 }
 
 export type Bill = {
@@ -46,6 +49,7 @@ export type Bill = {
     total: number;
     table: Table;
     guest: Guest;
+    status: string;
 }
 
 export type Guest = {
@@ -53,6 +57,7 @@ export type Guest = {
     start: Date;
     end: Date;
     bill: Bill;
+    status: string;
 }
 
 export type session = {

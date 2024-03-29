@@ -1,6 +1,6 @@
 "use client"
 
-import Home from "./views/home/Home";
+import Home from "./components/Home";
 
 export function ChefOrder() {
   return (
@@ -8,7 +8,6 @@ export function ChefOrder() {
       <div className="flex h-[90dvh]">
         <div className="w-full">
           < Home />
-          <p>Order</p>
         </div>
       </div>
     </div>

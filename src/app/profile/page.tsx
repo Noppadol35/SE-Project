@@ -16,15 +16,14 @@ const Profile = () => {
       <div className="flex h-screen items-center justify-center">
         <div className="bg-white p-6 rounded-md shadow-md">
           <div>
-            <img
+            {/* <img
               src ={session.user.image} referrerPolicy="no-referrer"
               className="w-20 h-20 rounded-full mx-auto"
-            />
+            /> */}
           </div>
           <h1>Profile</h1>
           <p>Welcome, {session.user.name}</p>
           <p>Email: {session.user.email}</p>
-          <p>Position: {session.user.role}</p>
           <button
             onClick={() => signOut({ callbackUrl: "/" })}
             className="w-full bg-blue-500 text-white py-2 rounded"

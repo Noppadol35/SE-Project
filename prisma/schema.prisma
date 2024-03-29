@@ -45,7 +45,8 @@ model User {
   emailVerified DateTime?
   image         String?
   createdAt     DateTime  @default(now())
-  role          Role      @default(WAITER)
+  roleID        String?
+  role          Role?      @relation(fields: [roleID], references: [id])
   accounts      Account[]
   sessions      Session[]
 }
@@ -62,11 +63,27 @@ model VerificationRequest {
 }
 
 model Table {
-  id       String  @id @default(cuid())
-  number   Int     @unique
-  capacity Int
-  status   Status  @default(IDLE)
-  order    Order[]
+  id             String  @id @default(cuid())
+  name           String  @unique
+  capacity       Int?    @default(0)
+  priceperperson Int?    @default(199)
+  statusId       String
+  status         Status  @relation(fields: [statusId], references: [id])
+  order          Order[]
+  bill           Bill[]
+  cart           Cart[]
+}
+
+model Status {
+  id    String  @id @default(cuid())
+  name  String  @unique
+  posts Table[]
+}
+
+model Role {
+  id   String @id @default(cuid())
+  name String @unique
+  user User[]
 }
 
 model Menu {
@@ -74,6 +91,7 @@ model Menu {
   name     String   @unique
   price    Float
   category Category @default(FOOD)
+  cart     Cart[]
   order    Order[]
 }
 
@@ -81,16 +99,29 @@ model Order {
   id       String @id @default(cuid())
   quantity Int
   tableID  String @map("table_id")
+  table    Table  @relation(fields: [tableID], references: [id], onDelete: Cascade)
+  cart     Cart[]
   menuID   String @map("menu_id")
   menu     Menu   @relation(fields: [menuID], references: [id], onDelete: Cascade)
-  table    Table  @relation(fields: [tableID], references: [id], onDelete: Cascade)
+}
+
+model Cart {
+  id      String @id @default(cuid())
+  menuID  String @map("menu_id")
+  orderID String @map("order_id")
+  tableID String @map("table_id")
+  table   Table  @relation(fields: [tableID], references: [id], onDelete: Cascade)
+  menu    Menu   @relation(fields: [menuID], references: [id], onDelete: Cascade)
+  order   Order  @relation(fields: [orderID], references: [id], onDelete: Cascade)
 }
 
 model Bill {
   id      String @id @default(cuid())
   guestID String @map("guest_id")
+  tableID String @map("table_id")
   total   Float
   guest   Guest  @relation(fields: [guestID], references: [id], onDelete: Cascade)
+  table   Table  @relation(fields: [tableID], references: [id], onDelete: Cascade)
 }
 
 model Guest {
@@ -98,19 +129,6 @@ model Guest {
   start DateTime
   end   DateTime
   bill  Bill[]
-}
-
-enum Role {
-  MANAGER
-  CHEF
-  WAITER
-  CASHIER
-}
-
-enum Status {
-  IDLE
-  EATING
-  PAID
 }
 
 enum Category {

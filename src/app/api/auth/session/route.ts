@@ -1,20 +1,13 @@
-import { NextApiRequest, NextApiResponse } from 'next'
 import { getServerSession } from 'next-auth/next'
 import { getToken } from 'next-auth/jwt'
-import { authOptions } from '@/app/auth';
 import { NextResponse } from 'next/server';
 
-export async function GET(request: NextApiRequest) {
+export async function GET() {
     try {
         const session = await getServerSession();
-        const accessToken = await getToken({
-            req: request,
-            secret: process.env.NEXTAUTH_SECRET,
-        })
 
         return NextResponse.json({
             message: 'message',
-            accessToken,
             session
         })
     } catch (error) {

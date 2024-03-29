@@ -11,7 +11,6 @@ import "@mantine/core/styles.css";
 import "@mantine/dropzone/styles.css";
 import "@mantine/notifications/styles.css";
 import { SessionProvider } from "next-auth/react";
-import Navbar from "@/components/Navbar";
 
 type Props = {
   children: ReactNode;
@@ -58,8 +57,7 @@ export default function Layout({ children }: Props) {
             <Notifications />
             <ModalsProvider>
               <SessionProvider>
-                <main className=" h-screen flex justify-center items-center ">
-                  <Navbar />
+                <main className=" h-screen justify-center items-center">
                   {children}
                 </main>
               </SessionProvider>

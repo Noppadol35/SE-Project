@@ -1,9 +1,13 @@
+"use client";
+import React from "react";
+import Tab from "./components/Tab";
+import NavbarMenu from "./components/NavbarMenu";
 
-
-function menuPage() {
+export default function mainmenu() {
   return (
-    <div>menuPage</div>
-  )
+    <div>
+      <NavbarMenu />
+      <Tab />
+    </div>
+  );
 }
-
-export default menuPage

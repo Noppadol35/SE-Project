@@ -1,5 +1,4 @@
 "use client";
-
 import React, { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { TextInput, Button, Container, Grid, Card } from "@mantine/core";
@@ -25,70 +24,71 @@ export default function SignupPage() {
   };
 
   return (
-    <Container size="md">
-      <Card shadow="md" padding="lg" radius="md" withBorder>
-        <form onSubmit={handleSubmit}>
-          <Grid>
-            <Grid.Col span={12} mb={6}>
-              {/* Name Input */}
-              <TextInput
-                rightSection={<IconUser style={{ width: 20, height: 20 }} />}
-                label="name"
-                type="text"
-                placeholder="Enter your name"
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-            </Grid.Col>
-  
-            <Grid.Col span={12} mb={6}>
-              {/* Email Input */}
-              <TextInput
-                rightSection={<IconAt style={{ width: 20, height: 20 }} />}
-                label="email"
-                placeholder="Enter your email"
-                type="email"
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </Grid.Col>
-  
-            <Grid.Col span={12} mb={6}>
-              {/* Password Input */}
-              <TextInput
-                rightSection={<IconLock style={{ width: 20, height: 20 }} />}
-                label="Password"
-                placeholder="Enter your password"
-                type="password"
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </Grid.Col>
-  
-            <Grid.Col span={12} mb={6}>
-              {/* Phone Input */}
-              <TextInput
-                rightSection={<IconPhone style={{ width: 20, height: 20 }} />}
-                label="Phone"
-                placeholder="Enter your phone number"
-                type="tel"
-                onChange={(e) => setPhone(e.target.value)}
-                required
-              />
-            </Grid.Col>
-  
-            {/* Signup Button */}
-            <Grid.Col span={12}>
-              <Button
-                type="submit"
-                style={{ marginTop: 20 }}
-              >
-                Sign Up
-              </Button>
-            </Grid.Col>
-          </Grid>
-        </form>
-      </Card>
+    <Container size="md" style={{ height: "100vh" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <Card shadow="md" padding="lg" radius="md" withBorder>
+          <form onSubmit={handleSubmit}>
+            <Grid>
+              <Grid.Col span={12} mb={6}>
+                <TextInput
+                  rightSection={<IconUser style={{ width: 20, height: 20 }} />}
+                  label="Name"
+                  type="text"
+                  placeholder="Enter your name"
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </Grid.Col>
+
+              <Grid.Col span={12} mb={6}>
+                <TextInput
+                  rightSection={<IconAt style={{ width: 20, height: 20 }} />}
+                  label="Email"
+                  placeholder="Enter your email"
+                  type="email"
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </Grid.Col>
+
+              <Grid.Col span={12} mb={6}>
+                <TextInput
+                  rightSection={<IconLock style={{ width: 20, height: 20 }} />}
+                  label="Password"
+                  placeholder="Enter your password"
+                  type="password"
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </Grid.Col>
+
+              <Grid.Col span={12} mb={6}>
+                <TextInput
+                  rightSection={<IconPhone style={{ width: 20, height: 20 }} />}
+                  label="Phone"
+                  placeholder="Enter your phone number"
+                  type="tel"
+                  onChange={(e) => setPhone(e.target.value)}
+                  required
+                />
+              </Grid.Col>
+
+              <Grid.Col span={12}>
+                <Button type="submit" style={{ marginTop: 20 }} fullWidth>
+                  Sign Up
+                </Button>
+              </Grid.Col>
+            </Grid>
+          </form>
+        </Card>
+      </div>
     </Container>
   );
 }

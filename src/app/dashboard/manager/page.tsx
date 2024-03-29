@@ -1,9 +1,10 @@
-import React from 'react'
+import  { ManagerPage }  from '@/components/Dashboard/Manager/managePage';
 
-function manager() {
+
+export default function Manager() {
   return (
-    <div>page</div>
-  )
+    <div>
+      <ManagerPage />
+    </div>
+  );
 }
-
-export default manager

@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Order, Menu, Table } from "@/types/entity";
+import OrderHistoryPage from './OrderHistoryPage';
+import Swal from 'sweetalert2';
+import ReactDOMServer from 'react-dom/server';
 
 function Home() {
   const [orders, setOrders] = useState([
@@ -21,7 +24,7 @@ function Home() {
           },
           qty: 2,
           optionDetail: [{ name: "No chili" }, { name: "Extra Tofu" }],
-          status: "กำลังทำ", // เพิ่มสถานะให้กับเมนู
+          status: "เสร็จสิ้น", // เพิ่มสถานะให้กับเมนู
         },
         {
           id: 2,
@@ -147,246 +150,97 @@ function Home() {
 
   const [selectedZone, setSelectedZone] = useState<string>("");
 
+  const orderHistoryHtml = ReactDOMServer.renderToString(<OrderHistoryPage orders={orders} />);
+
+  const handleViewOrderHistory = () => {
+    Swal.fire({
+      title: 'Order History',
+      html: orderHistoryHtml,
+      width: '40%',
+      showCloseButton: true,
+      showConfirmButton: true,
+      scrollbarPadding: true,
+      focusConfirm: true,
+      allowOutsideClick: true,
+    });
+  };
+
   return (
     <>
-      <div className="flex flex-col-reverse md:flex-row ">
-      <div className="w-full md:w-[calc(50%-16px)] p-2 md:h-[90dvh] rounded-xl flex flex-col justify-center items-center">
-  <div className="text-2xl p-3">
-    <p>รายการอาหารใหม่ - บิล</p>
-    <select
-      className="w-48 rounded-xl text-xl mt-2"
-      value={selectedZone}
-      onChange={(e) => setSelectedZone(e.target.value)}
-    >
-      <option value="">ทั้งหมด</option>
-      {orders && orders.length > 0 ? (
-        Array.from(
-          new Set(
-            orders.map((data) => data.tableID.map((v) => v.name)).flat()
-          )
-        ).map((tableName) => (
-          <option key={tableName} value={tableName}>
-            {tableName}
-          </option>
-        ))
-      ) : (
-        <option disabled>ไม่พบข้อมูล</option>
-      )}
-    </select>
-  </div>
-
-  <div className="flex flex-wrap justify-center gap-4 py-6 overflow-y-scroll w-full">
-    {orders ? (
-      orders
-        .filter(
-          (data) =>
-            selectedZone === "" ||
-            (Array.isArray(data.tableID) &&
-              data.tableID.some((v) => v.name === selectedZone))
-        )
-        .map((data) => (
-          <div key={data.id} className="w-full shadow-xl p-5 mb-6 bg-white rounded-xl card ">
-            <div className="card-body">
-              <h2 className="text-xl">
-                {Array.isArray(data.tableID) &&
-                  data.tableID.map((v) => (
-                    <React.Fragment key={v.name}>
-                      <p>
-                        {v.name} - {v.seat} Seats, {v.zoneId.name}
-                      </p>
-                      <p className="text-xs flex gap-1 justify-end ml-9">
-                        8:00 PM
-                      </p>
-                    </React.Fragment>
-                  ))}
-              </h2>
-
-              {Array.isArray(data.menu) &&
-                data.menu.map((v) => (
-                  <React.Fragment key={v.id}>
-                    <div className="flex gap-3">
-                      <input type="checkbox" />
-                      {v.priceList != null && v.priceList.food.name}
-                      <p className="justify-end flex">x {v.qty}</p>
-                    </div>
-                    <div className="text-sm text-[#D9D9D9] flex gap-3">
-                      {v.optionDetail.map((i) => (
-                        <div key={i.name?.toString()}>{i.name}</div>
-                      ))}
-                      {v.priceList != null && v.priceList.name}
-                    </div>
-                  </React.Fragment>
-                ))}
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="w-full md:w-[calc(50%-16px)] p-2 md:h-[90dvh] rounded-xl flex flex-col justify-center items-center">
+          <div className="flex items-center text-2xl p-3" style={{ marginBottom: "1rem" }}>
+            <p style={{ marginRight: "20rem" }}>Food Order - Bill</p>
+            <div>
+              <button
+                className="w-48 rounded-xl text-xl mt-2 p-2 bg-[#F5F5F5] border-none focus:outline-none focus:ring-2 focus:ring-[#ED7E46] focus:ring-opacity-50 transition duration-300 ease-in-out hover:shadow-xl"
+                onClick={handleViewOrderHistory}
+              >
+                Order History
+              </button>
             </div>
-            <div className="flex gap-6 justify-end p-6">
-            <button className="rounded-xl bg-[#436850] text-[#FBFADA] w-28 h-10 text-sm">
-              Success
-            </button>
           </div>
-          </div>
-        ))
-    ) : (
-      <div>ไม่พบข้อมูล</div>
-    )}
-  </div>
-</div>
 
+          <div className="flex flex-wrap justify-center gap-4 py-6 overflow-y-scroll w-full">
+            {orders ? (
+              orders
+                .filter(
+                  (data) =>
+                    selectedZone === "" ||
+                    (Array.isArray(data.tableID) &&
+                      data.tableID.some((v) => v.name === selectedZone))
+                )
+                .map((data) => (
+                  <div key={data.id} className="w-full shadow-xl p-5 mb-6 bg-white rounded-xl card ">
+                    <div className="card-body">
+                      <h2 className="text-xl">
+                        {Array.isArray(data.tableID) &&
+                          data.tableID.map((v) => (
+                            <React.Fragment key={v.name}>
+                              <p>
+                                {v.name} - {v.seat} Seats, {v.zoneId.name}
+                              </p>
+                              <p className="text-xs flex gap-1 justify-end ml-9">
+                                8:00 PM
+                              </p>
+                            </React.Fragment>
+                          ))}
+                      </h2>
 
-        <div className="md:w-1/2 p-2 md:h-[90dvh]">
-          <div className="text-2xl p-3 ">
-            <p>รายการอาหารทั้งหมด </p>
-          </div>
-          <div className="overflow-y-scroll h-32 bg-white">
-            {orders?.map((data) => (
-              <div key={data.id}>
-                <div className="px-2">
-                  <div>
-                    {Array.isArray(data.menu) &&
-                      data.menu.map((v) => (
-                        <div key={v.id} className="grid grid-cols-3 ">
-                          <div className="flex">
-                            <div className="ml-3 text-[#ED7E46]">
-                              <input type="checkbox"></input>
-                            </div>
-                            <div className="flex gap-2">
+                      {Array.isArray(data.menu) &&
+                        data.menu.map((v) => (
+                          <React.Fragment key={v.id}>
+                            <div className="flex gap-3">
+                              <input type="checkbox" />
+                              {v.priceList != null && v.priceList.food.name}
+                              <p className="justify-end flex">x {v.qty}</p>
                               <div className="ml-3 text-[#ED7E46]">
-                                x {v.qty}
-                              </div>
-                              <div>
-                                {v.priceList != null && v.priceList.food.name}
+                                preparing food
                               </div>
                             </div>
-                          </div>
-                          <div className="grid grid-cols-2 text-sm py-1 text-[#5F5F5F]">
-                            <div>
+                            <div className="text-sm text-[#D9D9D9] flex gap-3">
                               {v.optionDetail.map((i) => (
-                                <div key={i.name}>{i.name}</div>
+                                <div key={i.name?.toString()}>{i.name}</div>
                               ))}
+                              {v.priceList != null && v.priceList.name}
                             </div>
-                            <div>{v.priceList.name}</div>
-                          </div>
-                          <div className="flex justify-end p-1 text-xs py-1 text-[#0198DD]">
-                            {Array.isArray(data.tableID) &&
-                              data.tableID.map((v) => (
-                                <React.Fragment key={v.name}>
-                                  {v.name}
-                                </React.Fragment>
-                              ))}
-                          </div>
-                        </div>
-                      ))}
+                          </React.Fragment>
+                        ))}
+                    </div>
+                    <div className="flex gap-6 justify-end p-6">
+                      <button className="rounded-xl bg-[#436850] text-[#FBFADA] w-28 h-10 text-sm border-none focus:outline-none focus:ring-2 focus:ring-[#ED7E46] focus:ring-opacity-50 transition duration-300 ease-in-out hover:shadow-xl">
+                        Success
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-2xl p-3  ">
-            <p>รายการที่กำลังทำ </p>
-          </div>
-          <div className="overflow-y-scroll h-32 bg-white">
-            {orders?.map((data) => (
-              <div key={data.id}>
-                <div className="px-2">
-                  <div>
-                    {Array.isArray(data.menu) &&
-                      data.menu.map((v) => (
-                        <div key={v.id} className="grid grid-cols-3 ">
-                          <div className="flex">
-                            <div className="ml-3 text-[#ED7E46]">
-                              <input type="checkbox"></input>
-                            </div>
-                            <div className="flex gap-2">
-                              <div className="ml-3 text-[#ED7E46]">
-                                x {v.qty}
-                              </div>
-                              <div>
-                                {v.priceList != null && v.priceList.food.name}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-2 text-sm py-1 text-[#5F5F5F]">
-                            <div>
-                              {v.optionDetail.map((i) => (
-                                <div key={i.name}>{i.name}</div>
-                              ))}
-                            </div>
-                            <div>{v.priceList.name}</div>
-                          </div>
-                          <div className="flex justify-end p-1 text-xs py-1 text-[#0198DD]">
-                            {Array.isArray(data.tableID) &&
-                              data.tableID.map((v) => (
-                                <React.Fragment key={v.name}>
-                                  {v.name}
-                                </React.Fragment>
-                              ))}
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-2xl p-3  ">
-            <p>รายการที่สำเร็จ </p>
-          </div>
-          <div className="overflow-y-scroll h-32 bg-white">
-            {orders?.map((data) => (
-              <div key={data.id}>
-                <div className="px-2">
-                  <div>
-                    {Array.isArray(data.menu) &&
-                      data.menu.map((v) => (
-                        <div key={v.id} className="grid grid-cols-3 ">
-                          <div className="flex">
-                            <div className="ml-3 text-[#ED7E46]">
-                              <input type="checkbox"></input>
-                            </div>
-                            <div className="flex gap-2">
-                              <div className="ml-3 text-[#ED7E46]">
-                                x {v.qty}
-                              </div>
-                              <div>
-                                {v.priceList != null && v.priceList.food.name}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-2 text-sm py-1 text-[#5F5F5F]">
-                            <div>
-                              {v.optionDetail.map((i) => (
-                                <div key={i.name}>{i.name}</div>
-                              ))}
-                            </div>
-                            <div>{v.priceList.name}</div>
-                          </div>
-                          <div className="flex justify-end p-1 text-xs py-1 text-[#0198DD]">
-                            {Array.isArray(data.tableID) &&
-                              data.tableID.map((v) => (
-                                <React.Fragment key={v.name}>
-                                  {v.name}
-                                </React.Fragment>
-                              ))}
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex gap-6 justify-end p-6">
-            <button className="rounded-xl bg-[#AEAEAE] text-[#FBFADA] w-28 h-10 text-sm">
-              ล้างทั้งหมด
-            </button>
-            <button className="rounded-xl bg-[#436850] text-[#FBFADA] w-28 h-10 text-sm">
-              เริ่มทำ
-            </button>
+                ))
+            ) : (
+              <div>ไม่พบข้อมูล</div>
+            )}
           </div>
         </div>
       </div>
+
     </>
   );
 }

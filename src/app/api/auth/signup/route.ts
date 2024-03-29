@@ -13,14 +13,14 @@ interface UserRequest {
 
 export async function POST(request: Request) {
   try {
-    const { name, password, email, phone }: UserRequest = await request.json();
+    const { name, email , password, phone }: UserRequest = await request.json();
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await prisma.user.create({
       data: {
         name,
-        password: hashedPassword,
         email,
+        password: hashedPassword,
         phone,
       },
     });

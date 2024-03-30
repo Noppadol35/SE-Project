@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from "react";
 import { Order, Menu, Table } from "@/types/entity";
-import OrderHistoryPage from './OrderHistoryPage';
-import Swal from 'sweetalert2';
-import ReactDOMServer from 'react-dom/server';
+import OrderHistoryPage from "./OrderHistoryPage";
+import { Modal, Button } from "@mantine/core";
+import ReactDOMServer from "react-dom/server";
 
 function Home() {
   const [orders, setOrders] = useState([
@@ -151,34 +150,34 @@ function Home() {
 
   const [selectedZone, setSelectedZone] = useState<string>("");
 
-  const orderHistoryHtml = ReactDOMServer.renderToString(<OrderHistoryPage orders={orders} />);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleViewOrderHistory = () => {
-    Swal.fire({
-      title: 'Order History',
-      html: orderHistoryHtml,
-      width: '40%',
-      showCloseButton: true,
-      showConfirmButton: true,
-      scrollbarPadding: true,
-      focusConfirm: true,
-      allowOutsideClick: true,
-    });
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
     <>
       <div className="flex justify-center items-center min-h-screen">
         <div className="w-full md:w-[calc(50%-16px)] p-2 md:h-[90dvh] rounded-xl flex flex-col justify-center items-center">
-          <div className="flex items-center text-2xl p-3" style={{ marginBottom: "1rem" }}>
+          <div
+            className="flex items-center text-2xl p-3"
+            style={{ marginBottom: "1rem" }}
+          >
             <p style={{ marginRight: "20rem" }}>Food Order - Bill</p>
             <div>
-              <button
-                className="w-48 rounded-xl text-xl mt-2 p-2 bg-[#F5F5F5] border-none focus:outline-none focus:ring-2 focus:ring-[#ED7E46] focus:ring-opacity-50 transition duration-300 ease-in-out hover:shadow-xl"
-                onClick={handleViewOrderHistory}
+              <Button onClick={handleViewOrderHistory} color="blue" className="hover:shadow-xl">Order History</Button>
+              <Modal
+                title="Order History"
+                opened={isModalOpen}
+                onClose={handleCloseModal}
               >
-                Order History
-              </button>
+                <OrderHistoryPage orders={orders} />
+              </Modal>
             </div>
           </div>
 
@@ -192,7 +191,10 @@ function Home() {
                       data.tableID.some((v) => v.name === selectedZone))
                 )
                 .map((data) => (
-                  <div key={data.id} className="w-full shadow-xl p-5 mb-6 bg-white rounded-xl card ">
+                  <div
+                    key={data.id}
+                    className="w-full shadow-xl p-5 mb-6 bg-white rounded-xl card "
+                  >
                     <div className="card-body">
                       <h2 className="text-xl">
                         {Array.isArray(data.tableID) &&
@@ -241,11 +243,8 @@ function Home() {
           </div>
         </div>
       </div>
-
     </>
   );
 }
 
 export default Home;
-
-        

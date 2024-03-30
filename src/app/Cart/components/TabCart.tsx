@@ -11,23 +11,10 @@ import {
   IconButton,
 } from '@mui/material';
 import QuantityControlCart from "./QuantityControlCart";
-import { makeStyles } from '@mui/styles';
 import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import Tooltip from '@mui/material/Tooltip';
 import axios from "axios";
 
-const useStyles = makeStyles({
-  tableContainer: {},
-  tableCell: {
-    padding: '12px',
-    borderBottom: '1px solid #dddddd',
-  },
-  tableHeadCell: {
-    backgroundColor: '#f2f2f2',
-    fontWeight: 'bold',
-    borderBottom: '1px solid #dddddd',
-  },
-});
 
 interface CartItem {
   id: string;
@@ -44,7 +31,6 @@ const StickyHeadTable: React.FC = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(100); // Set default rows per page
   const [order, setOrder] = useState<CartItem[]>([]);
-  const classes = useStyles();
 
   useEffect(() => {
     getOrder();
@@ -96,15 +82,15 @@ const StickyHeadTable: React.FC = () => {
 
   return (
     <div>
-      <TableContainer className={classes.tableContainer} component={Paper}>
+      <TableContainer component={Paper}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
-              <TableCell className={classes.tableHeadCell}>No.</TableCell>
-              <TableCell className={classes.tableHeadCell}>Name</TableCell>
-              <TableCell className={classes.tableHeadCell}>Price</TableCell>
-              <TableCell className={classes.tableHeadCell}>Quantity</TableCell>
-              <TableCell className={classes.tableHeadCell}>Action</TableCell>
+              <TableCell>No.</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Price</TableCell>
+              <TableCell>Quantity</TableCell>
+              <TableCell>Action</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -112,19 +98,19 @@ const StickyHeadTable: React.FC = () => {
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => (
                 <TableRow key={row.id}>
-                  <TableCell className={classes.tableCell}>{index + 1}</TableCell>
-                  <TableCell className={classes.tableCell}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>
                     <Typography variant="body1">{row.menu.name}</Typography>
                   </TableCell>
-                  <TableCell className={classes.tableCell}>{row.menu.price} บาท</TableCell>
-                  <TableCell className={classes.tableCell}>
+                  <TableCell>{row.menu.price} บาท</TableCell>
+                  <TableCell>
                     <QuantityControlCart
                       count={row.order.quantity}
                       handleIncrement={() => handleIncrement(page * rowsPerPage + index)}
                       handleDecrement={() => handleDecrement(page * rowsPerPage + index)}
                     />
                   </TableCell>
-                  <TableCell className={classes.tableCell}>
+                  <TableCell>
                     <Tooltip title="Delete" arrow>
                       <IconButton onClick={() => deleteOrder}>
                         <DeleteOutlineOutlinedIcon />

@@ -170,7 +170,7 @@ function Home() {
           >
             <p style={{ marginRight: "20rem" }}>Food Order - Bill</p>
             <div>
-              <Button onClick={handleViewOrderHistory} color="blue" className="hover:shadow-xl">Order History</Button>
+            <Button onClick={handleViewOrderHistory} color="gray" className=" rounded-xl hover:shadow-xl">Order History</Button>
               <Modal
                 title="Order History"
                 opened={isModalOpen}

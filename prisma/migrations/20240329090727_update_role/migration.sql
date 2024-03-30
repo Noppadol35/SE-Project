@@ -2,9 +2,6 @@
 CREATE TYPE "Role" AS ENUM ('MANAGER', 'CHEF', 'WAITER', 'CASHIER');
 
 -- CreateEnum
-CREATE TYPE "Status" AS ENUM ('IDLE', 'EATING', 'PAID');
-
--- CreateEnum
 CREATE TYPE "Category" AS ENUM ('DRINK', 'DESSERT', 'FOOD');
 
 -- CreateTable
@@ -48,7 +45,7 @@ CREATE TABLE "User" (
     "emailVerified" TIMESTAMP(3),
     "image" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "role" "Role" NOT NULL DEFAULT 'WAITER',
+    "role" "Role" NOT NULL DEFAULT 'CHEF',
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -68,11 +65,20 @@ CREATE TABLE "VerificationRequest" (
 -- CreateTable
 CREATE TABLE "Table" (
     "id" TEXT NOT NULL,
-    "number" INTEGER NOT NULL,
-    "capacity" INTEGER NOT NULL,
-    "status" "Status" NOT NULL DEFAULT 'IDLE',
+    "name" TEXT NOT NULL,
+    "capacity" INTEGER DEFAULT 0,
+    "priceperperson" INTEGER DEFAULT 199,
+    "statusId" TEXT NOT NULL,
 
     CONSTRAINT "Table_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Status" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "Status_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -96,10 +102,21 @@ CREATE TABLE "Order" (
 );
 
 -- CreateTable
+CREATE TABLE "Cart" (
+    "id" TEXT NOT NULL,
+    "menu_id" TEXT NOT NULL,
+    "order_id" TEXT NOT NULL,
+    "table_id" TEXT NOT NULL,
+
+    CONSTRAINT "Cart_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "Bill" (
     "id" TEXT NOT NULL,
-    "price" DOUBLE PRECISION NOT NULL,
     "guest_id" TEXT NOT NULL,
+    "table_id" TEXT NOT NULL,
+    "total" DOUBLE PRECISION NOT NULL,
 
     CONSTRAINT "Bill_pkey" PRIMARY KEY ("id")
 );
@@ -132,7 +149,10 @@ CREATE UNIQUE INDEX "VerificationRequest_token_key" ON "VerificationRequest"("to
 CREATE UNIQUE INDEX "VerificationRequest_identifier_token_key" ON "VerificationRequest"("identifier", "token");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Table_number_key" ON "Table"("number");
+CREATE UNIQUE INDEX "Table_name_key" ON "Table"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Status_name_key" ON "Status"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Menu_name_key" ON "Menu"("name");
@@ -144,10 +164,25 @@ ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId"
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Table" ADD CONSTRAINT "Table_statusId_fkey" FOREIGN KEY ("statusId") REFERENCES "Status"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Order" ADD CONSTRAINT "Order_table_id_fkey" FOREIGN KEY ("table_id") REFERENCES "Table"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Order" ADD CONSTRAINT "Order_menu_id_fkey" FOREIGN KEY ("menu_id") REFERENCES "Menu"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Cart" ADD CONSTRAINT "Cart_table_id_fkey" FOREIGN KEY ("table_id") REFERENCES "Table"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Cart" ADD CONSTRAINT "Cart_menu_id_fkey" FOREIGN KEY ("menu_id") REFERENCES "Menu"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Cart" ADD CONSTRAINT "Cart_order_id_fkey" FOREIGN KEY ("order_id") REFERENCES "Order"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "Bill" ADD CONSTRAINT "Bill_guest_id_fkey" FOREIGN KEY ("guest_id") REFERENCES "Guest"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Bill" ADD CONSTRAINT "Bill_table_id_fkey" FOREIGN KEY ("table_id") REFERENCES "Table"("id") ON DELETE CASCADE ON UPDATE CASCADE;

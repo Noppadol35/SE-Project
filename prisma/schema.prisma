@@ -40,13 +40,12 @@ model User {
   id            String    @id @default(cuid())
   name          String?
   email         String    @unique
-  password      String
-  phone         String
+  password      String?
+  phone         String?
   emailVerified DateTime?
   image         String?
   createdAt     DateTime  @default(now())
-  roleID        String?
-  role          Role?      @relation(fields: [roleID], references: [id])
+  role          Role      @default(CHEF)
   accounts      Account[]
   sessions      Session[]
 }
@@ -78,12 +77,6 @@ model Status {
   id    String  @id @default(cuid())
   name  String  @unique
   posts Table[]
-}
-
-model Role {
-  id   String @id @default(cuid())
-  name String @unique
-  user User[]
 }
 
 model Menu {
@@ -129,6 +122,13 @@ model Guest {
   start DateTime
   end   DateTime
   bill  Bill[]
+}
+
+enum Role {
+  MANAGER
+  CHEF
+  WAITER
+  CASHIER
 }
 
 enum Category {

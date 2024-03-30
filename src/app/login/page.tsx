@@ -1,8 +1,8 @@
 "use client";
-import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { User } from "@/types/entity";
+import { redirectBasedOnRole } from "@/lib/utils";
 
 export default function SignIn() {
   const router = useRouter();
@@ -10,31 +10,32 @@ export default function SignIn() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false); // เพิ่มตัวแปรสถานะ loading
 
+  const { data } = useSession();
+  useEffect(() => {
+    const session = data as any;
+
+    if (!session) return;
+    if (!session?.session?.user?.role) return;
+
+    router.push(redirectBasedOnRole(session.session.user.role)); // ใช้ฟังก์ชัน redirectBasedOnRole จากไฟล์ utils.ts
+  }, [data]);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true); // เริ่มต้นโหลดข้อมูล
 
     try {
       const result = await signIn("credentials", {
+        redirect: false,
         email,
         password,
       });
-
       if (result?.error) {
         alert(result.error);
-        console.error(result.error);
-      } else {
-        const response = result as unknown as User;
-        if (response.role === "CHEF") {
-          router.push("dashboard/chef");
-        } else {
-          router.push("/profile");
-        }
+        setLoading(false); // หยุดโหลดข้อมูล
       }
     } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false); // สิ้นสุดการโหลดข้อมูล
+      console.log("error", error);
     }
   };
 

@@ -1,15 +1,19 @@
 import type { NextAuthOptions } from "next-auth"
+import type { JWT } from "next-auth/jwt"
 import NextAuth from "next-auth"
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import { PrismaAdapter } from '@auth/prisma-adapter';
+import { getServerSession } from "next-auth/next";
 import bcrypt from 'bcrypt';
+import jwt, { JwtPayload, Secret } from "jsonwebtoken"
 import { PrismaClient } from '@prisma/client';
+import { request, response } from "express";
 
 const prisma = new PrismaClient();
 
 export const authOptions: NextAuthOptions = {
-
+    secret: process.env.NEXTAUTH_SECRET,
     providers: [
         CredentialsProvider({
             name: "Credentials",
@@ -57,6 +61,33 @@ export const authOptions: NextAuthOptions = {
             },
         }),
     ],
+    // jwt: {
+    //     async encode({ secret, token }) {
+    //         const encodedToken = jwt.sign(
+    //             token && typeof token === 'object' ? { ...token } : {},
+    //             secret,
+    //             { algorithm: 'HS512' }
+    //         )
+    //         return encodedToken
+    //     },
+    //     async decode({ secret, token }) {
+    //         if (!secret || !token) {
+    //             throw new Error('Secret and token must be provided');
+    //         }
+    //         const decodedToken = jwt.verify(token, secret) as JwtPayload
+    //         if (!decodedToken) {
+    //             return null
+    //         }
+
+    //         const { id, role, ...rest } = decodedToken as JWT
+
+    //         return {
+    //             id,
+    //             role,
+    //             ...rest,
+    //         }
+    //     },
+    // },
 
     adapter: PrismaAdapter(prisma) as any,
     session: {
@@ -77,24 +108,47 @@ export const authOptions: NextAuthOptions = {
             }
             return session
         },
-        jwt: async ({ token, user }) => {
+        jwt: async ({ token, user, session }) => {
             const User = await prisma.user.findFirst({
                 where: {
                     id: token.id,
                 },
             })
-            if(!User){
+            if (!User) {
                 token.id = user!.id
                 return token
             }
-            return{
+            return {
                 id: User.id,
                 name: User.name,
                 email: User.email,
                 role: User.role,
                 password: User.password,
             }
-        }
+        },
+        // async redirect({ url, baseUrl }) {
+        //     const baseUrlWithTrailingSlash = `${baseUrl}/dashboard`
+
+        //     if (url === baseUrlWithTrailingSlash) {
+        //         // const session = await getServerSession(authOptions)
+        //         // const session = null;
+
+        //         if (session?.user?.role === 'CHEF') {
+        //             return `${baseUrl}/chef`
+        //         } else if (session?.user?.role === 'MANAGER') {
+        //             return `${baseUrl}/manager`
+        //         } else if (session?.user?.role === 'WAITER') {
+        //             return `${baseUrl}/waiter`
+        //         } else if (session?.user?.role === 'CASHIER') {
+        //             return `${baseUrl}/cashier`
+        //         } else {
+        //             return `${baseUrl}/`
+        //         }
+        //     }
+
+        //     return baseUrlWithTrailingSlash
+        // },
     },
 }
+
 export default NextAuth(authOptions)

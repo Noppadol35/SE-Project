@@ -1,6 +1,6 @@
 "use client"
 
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/Dashboard/Chef/components/Navbar";
 import Home from "./components/Home";
 
 export function ChefOrder() {

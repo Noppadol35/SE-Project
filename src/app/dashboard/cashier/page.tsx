@@ -1,12 +1,13 @@
+import Home from "@/components/Dashboard/cashier/cashirePage"
 
 export const metadata = {
-    title: "Cashier",
+  title: "Cashier 🧾",
 };
 
-export default async function Staff(){
-    return (
-        <div>
-            <h1>Staff</h1>
-        </div>
-    );
+export default function Cashier() {
+  return (
+    <div>
+      <Home />
+    </div>
+  );
 }

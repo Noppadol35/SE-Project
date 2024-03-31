@@ -1,5 +1,4 @@
 import { getServerSession } from 'next-auth/next'
-import { getToken } from 'next-auth/jwt'
 import { NextResponse } from 'next/server';
 import { authOptions } from '@/app/auth';
 

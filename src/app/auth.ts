@@ -5,6 +5,7 @@ import GoogleProvider from 'next-auth/providers/google';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import bcrypt from 'bcrypt';
 import { PrismaClient } from '@prisma/client';
+import { getSession } from "next-auth/react";
 
 const prisma = new PrismaClient();
 
@@ -17,7 +18,7 @@ export const authOptions: NextAuthOptions = {
                 email: { label: "Email", type: "text" },
                 password: { label: "Password", type: "password" },
             },
-            async authorize(credentials) {
+            async authorize(credentials, req) {
                 if (!credentials) return null;
 
                 const user = await prisma.user.findUnique({
@@ -31,6 +32,18 @@ export const authOptions: NextAuthOptions = {
                 const valid = await bcrypt.compare(credentials.password, user.password ? user.password : "");
                 if (!valid) {
                     return null;
+                }
+
+                const session = await getSession({ req });
+                console.log('server session', session);
+                console.log('real value', { id: user.id, name: user.name, email: user.email, role: user.role });
+                if (session) {
+                    session.user.id = user.id;
+                    session.user.name = user.name;
+                    session.user.email = user.email;
+                    session.user.role = user.role;
+
+                    return session;
                 }
 
                 return {
@@ -77,7 +90,18 @@ export const authOptions: NextAuthOptions = {
             }
             return session
         },
-        jwt: async ({ token, user, session }) => {
+        jwt: async ({ token, user, trigger, session }) => {
+            if (trigger === 'update') {
+                console.log(session);
+                return {
+                    id: session.id,
+                    name: session.name,
+                    email: session.email,
+                    role: session.role,
+                    password: session.password,
+                };
+            }
+
             const User = await prisma.user.findFirst({
                 where: {
                     id: token.id,

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Order, Menu, Table } from "@/types/entity";
 import OrderHistoryPage from "./OrderHistoryPage";
 import { Modal, Button } from "@mantine/core";
-import ReactDOMServer from "react-dom/server";
 
 function Home() {
   const [orders, setOrders] = useState([

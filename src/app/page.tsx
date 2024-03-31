@@ -5,13 +5,12 @@ export const metadata = {
   title: "Home 🏠",
 };
 
-
 async function getCookieData() {
   return new Promise((resolve) =>
     setTimeout(() => {
-      resolve(cookies().getAll())
+      resolve(cookies().getAll());
     }, 1000)
-  )
+  );
 }
 
 export default async function Page() {
@@ -22,5 +21,5 @@ export default async function Page() {
       <Navbar />
       <h1>Hello World!</h1>
     </div>
-  )
+  );
 }

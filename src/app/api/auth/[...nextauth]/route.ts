@@ -1,21 +1,18 @@
-import NextAuth from "next-auth"
+import NextAuth from "next-auth";
 import { authOptions } from "@/app/auth";
 
 interface Credentials {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 }
 
 interface user {
-    id: number;
-    name: string;
-    email: string;
-    role: string;
-    password: string;
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  password: string;
 }
-
-
-
 
 const handler = NextAuth(authOptions);
 

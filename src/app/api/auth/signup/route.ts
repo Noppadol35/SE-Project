@@ -1,6 +1,6 @@
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
-import { NextResponse } from 'next/server';
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
+import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
@@ -13,7 +13,7 @@ interface UserRequest {
 
 export async function POST(request: Request) {
   try {
-    const { name, email , password, phone }: UserRequest = await request.json();
+    const { name, email, password, phone }: UserRequest = await request.json();
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await prisma.user.create({
@@ -25,10 +25,13 @@ export async function POST(request: Request) {
       },
     });
 
-    return NextResponse.json({ message: 'User created', newUser });
-  } catch (error){
+    return NextResponse.json({ message: "User created", newUser });
+  } catch (error) {
     console.error(error);
 
-    return NextResponse.json({ message: 'Something went wrong' }, { status: 500 });
+    return NextResponse.json(
+      { message: "Something went wrong" },
+      { status: 500 }
+    );
   }
 }

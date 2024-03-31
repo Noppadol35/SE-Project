@@ -266,6 +266,7 @@ const Edit = ({ params }: { params: { id: string } }) => {
               >
                 {statuss.map((sta: any) => (
                   <FormControlLabel
+                    key={sta.id}
                     value={sta.id}
                     label={sta.name}
                     control={<Radio />}

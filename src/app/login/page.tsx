@@ -4,6 +4,7 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { redirectBasedOnRole } from "@/lib/utils";
 
+
 export default function SignIn() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -18,7 +19,7 @@ export default function SignIn() {
     if (!session?.session?.user?.role) return;
 
     router.push(redirectBasedOnRole(session.session.user.role)); // ใช้ฟังก์ชัน redirectBasedOnRole จากไฟล์ utils.ts
-  }, [data]);
+  }, [data, router]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

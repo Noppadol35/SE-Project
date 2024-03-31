@@ -1,18 +1,81 @@
-import { signOut } from "next-auth/react";
-import Link from "next/link";
+"use client";
+import cx from "clsx";
+import { useState } from "react";
+import { signOut, useSession } from "next-auth/react";
+import {
+  Container,
+  Avatar,
+  UnstyledButton,
+  Group,
+  Text,
+  Menu,
+  Burger,
+  rem,
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { IconLogout, IconChevronDown } from "@tabler/icons-react";
+import classes from "@/app/styles/HeaderTabs.module.css";
+import Image from "next/image";
 
-const Navbar = () => {
+export default function HeaderTabs() {
+  const [opened, { toggle }] = useDisclosure(false);
+  const [userMenuOpened, setUserMenuOpened] = useState(false);
+  const { data: session, update } = useSession();
+
+  console.log(session?.user?.name);
+
   return (
-    <div className=" bg-zinc-100 py-2 border-b border-s-zinc-200 fixed w-full z-10 top-0">
-      <div className="container flex items-center justify-between">
-        <Link href="/">LOGO</Link>
-        <button
-          onClick={() => signOut({ callbackUrl: "/" })}
-          className="w-40 bg-green-800 text-white py-2 rounded hover:bg-green-900 transition duration-300 relative text-center font-bold"
-        >SignOut</button>
-      </div>
+    <div className={classes.header}>
+      <Container className={classes.mainSection} size="md">
+        <Group justify="space-between">
+          <Image src="/Buffet.png" alt="Buffet Logo" width={60} height={60} />
+          <Burger opened={opened} onClick={toggle} hiddenFrom="xs" size="sm" />
+          <Menu
+            width={260}
+            position="bottom-end"
+            transitionProps={{ transition: "pop-top-right" }}
+            onClose={() => setUserMenuOpened(false)}
+            onOpen={() => setUserMenuOpened(true)}
+            withinPortal
+          >
+            <Menu.Target>
+              <UnstyledButton
+                className={cx(classes.user, {
+                  [classes.userActive]: userMenuOpened,
+                })}
+              >
+                <Group gap={7}>
+                  <Avatar color="rgba(20, 143, 47, 1)" />
+                  <Text fw={500} size="sm" lh={1} mr={3}>
+                    {session?.user?.name || "User"}
+                  </Text>
+                  <IconChevronDown
+                    style={{ width: rem(12), height: rem(12) }}
+                    stroke={1.5}
+                  />
+                </Group>
+              </UnstyledButton>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item
+                leftSection={
+                  <IconLogout
+                    style={{ width: rem(16), height: rem(16) }}
+                    stroke={1.5}
+                  />
+                }
+                onClick={async () => {
+                  await signOut({ callbackUrl: "/" });
+                  await update();
+                  console.log("sign out!");
+                }}
+              >
+                Logout
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        </Group>
+      </Container>
     </div>
   );
-};
-
-export default Navbar;
+}

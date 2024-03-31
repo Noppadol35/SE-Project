@@ -2,6 +2,8 @@
 import { useState, useEffect, FormEvent } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useDisclosure } from "@mantine/hooks";
+import * as yup from "yup"; // import yup
 import {
   TextInput,
   PasswordInput,
@@ -13,99 +15,120 @@ import {
   Button,
   LoadingOverlay,
   Divider,
+  Box,
 } from "@mantine/core";
+import { useForm } from "@mantine/form"; // import useForm
 import { redirectBasedOnRole } from "@/lib/utils";
 
 export default function SignIn() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
+  const [visible, { toggle }] = useDisclosure(false);
+  const { data, update } = useSession();
 
-  const { data } = useSession();
+  const form = useForm({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validate: {
+      email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
+      password: (value) =>
+        value.length !== 10 ? null : "Password is required",
+    },
+  });
+
+  const schema = yup.object().shape({
+    email: yup
+      .string()
+      .email("Invalid email address")
+      .required("Email is required"),
+    password: yup.string().required("Password is required"),
+  });
+
+  schema.validate({ email: "invalid", password: "invalid" }).catch((error) => {
+    console.log(error.errors);
+  });
+
   useEffect(() => {
     const session = data as any;
+    console.log(session);
     if (!session) return;
     if (!session?.session?.user?.role) return;
 
-    router.push(redirectBasedOnRole(session.session.user.role));
+    // router.push(redirectBasedOnRole(session.session.user.role));
   }, [data, router]);
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setEmailError("");
-    setPasswordError("");
-
-    if (email.trim() === "") {
-      setEmailError("Please enter your email");
-    }
-
-    if (password.trim() === "") {
-      setPasswordError("Please enter your password");
-    }
-
-    if (email.trim() !== "" && password.trim() !== "") {
-      setLoading(true);
-      try {
-        const result = await signIn("credentials", {
-          redirect: false,
-          email,
-          password,
-        });
-        if (result?.error) {
-          alert(result.error);
-          setLoading(false);
-        }
-      } catch (error) {
-        console.log("error", error);
-        setLoading(false);
+  const handleSubmit = async (values: { email: string; password: string }) => {
+    toggle();
+    setLoading(true);
+    try {
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: values.email,
+        password: values.password,
+      });
+      if (result?.error) {
+        alert(result.error);
       }
+      await update();
+      console.log('UPDATE LOCAL SESSION',result);
+    } catch (error) {
+      console.log("error", error);
+    } finally {
+      toggle();
+      setLoading(false);
     }
   };
 
   return (
     <div className="items-center justify-center ">
       <Container size={420} my={40}>
-        <LoadingOverlay visible={false} />
-        <Title className=" text-center">Welcome back!</Title>
-        <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-          <TextInput
-            label="Email"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            error={emailError}
+        <Box pos="relative">
+          <LoadingOverlay
+            visible={visible}
+            loaderProps={{ children: "Loading..." }}
           />
-          <PasswordInput
-            label="Password"
-            placeholder="Your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            error={passwordError}
-            mt="md"
-          />
-          <Group mt="md">
-            <Anchor onClick={() => router.push("/signup")} size="sm" fw={500}>
-              Don't have an account? Sign up
-            </Anchor>
-          </Group>
-          <Button fullWidth mt="xl" type="submit" onClick={handleSubmit}>
-            Sign in
-          </Button>
-          <Divider orientation="horizontal" mt="xl" />
-          <Button
-            fullWidth
-            mt="md"
-            color="red"
-            onClick={() => signIn("google")}
-          >
-            Sign in with Google
-          </Button>
-        </Paper>
+          <Title className=" text-center">Welcome back!</Title>
+          <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+            <form onSubmit={form.onSubmit(handleSubmit)}>
+              <TextInput
+                label="Email"
+                placeholder="you@example.com"
+                {...form.getInputProps("email")}
+                required
+              />
+              <PasswordInput
+                label="Password"
+                placeholder="Your password"
+                {...form.getInputProps("password")}
+                required
+                mt="md"
+              />
+              <Group mt="md">
+                <Anchor
+                  onClick={() => router.push("/signup")}
+                  size="sm"
+                  fw={500}
+                >
+                  Don't have an account? Sign up
+                </Anchor>
+              </Group>
+              <Button fullWidth mt="xl" type="submit">
+                Login
+              </Button>
+            </form>
+            <Divider orientation="horizontal" mt="xl" />
+            <Button
+              fullWidth
+              mt="md"
+              color="red"
+              onClick={() => signIn("google")}
+            >
+              Sign in with Google
+            </Button>
+          </Paper>
+        </Box>
       </Container>
     </div>
   );

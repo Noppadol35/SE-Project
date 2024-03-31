@@ -1,15 +1,26 @@
 import Navbar from "@/components/Navbar";
+import { cookies } from "next/headers";
 
 export const metadata = {
-  title: "Home",
+  title: "Home 🏠",
 };
 
 
-export default function Home() {
+async function getCookieData() {
+  return new Promise((resolve) =>
+    setTimeout(() => {
+      resolve(cookies().getAll())
+    }, 1000)
+  )
+}
+
+export default async function Page() {
+  const cookieData = await getCookieData();
+  console.log(cookieData);
   return (
     <div>
       <Navbar />
-      <h1>Home</h1>
+      <h1>Hello World!</h1>
     </div>
-  );
+  )
 }

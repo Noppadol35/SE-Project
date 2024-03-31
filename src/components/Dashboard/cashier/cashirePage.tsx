@@ -13,6 +13,7 @@ import Button from "@mui/material/Button";
 import TableRestaurantIcon from "@mui/icons-material/TableRestaurant";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
+import Navbar from "@/components/Dashboard/Chef/components/Navbar";
 
 const styling = {
   container: {
@@ -68,6 +69,7 @@ export default function Home() {
 
   return (
     <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+      <Navbar />
       <CssBaseline />
 
       <Grid container sx={{ flexGrow: 1 }}>

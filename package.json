@@ -28,6 +28,7 @@
     "@tabler/icons-react": "^2.47.0",
     "@tabler/icons-vue": "^3.1.0",
     "@tanstack/react-query": "^5.24.8",
+    "@types/qrcode.react": "^1.0.5",
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.6.7",
     "babel-preset-next": "^1.4.0",

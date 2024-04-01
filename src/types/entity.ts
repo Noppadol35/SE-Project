@@ -2,8 +2,8 @@
 export type User = {
     id: string;
     email: string;
-    password: string;
     name: string;
+    phone: string;
     role: string;
 }
 
@@ -25,11 +25,11 @@ export type Menu = {
     status: string;
 }
 
-export type Table = {
+export type TableEntity = {
     id: string;
     name: string;
     capacity: number;
-    status: string;
+    StatusEnum: string;
     order: Order;
     cart: Cart;
     bill: Bill;
@@ -39,7 +39,7 @@ export type Cart = {
     id: string;
     menu: Menu;
     order: Order;
-    table: Table;
+    table: TableEntity;
     quantity: number;
     status: string;
 }
@@ -47,7 +47,7 @@ export type Cart = {
 export type Bill = {
     id: string;
     total: number;
-    table: Table;
+    table: TableEntity;
     guest: Guest;
     status: string;
 }

@@ -66,46 +66,50 @@ model Table {
   name           String  @unique
   capacity       Int?    @default(0)
   priceperperson Int?    @default(199)
-  statusId       String
-  status         Status  @relation(fields: [statusId], references: [id])
+  status         Status  @default(IDLE)
   order          Order[]
   bill           Bill[]
   cart           Cart[]
 }
 
-model Status {
-  id    String  @id @default(cuid())
-  name  String  @unique
-  posts Table[]
+model Menu {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  price      Float
+  categoryID Int
+  category   Category @relation(fields: [categoryID], references: [id])
+  cart       Cart[]
+  order      Order[]
 }
 
-model Menu {
-  id       String   @id @default(cuid())
-  name     String   @unique
-  price    Float
-  category Category @default(FOOD)
-  cart     Cart[]
-  order    Order[]
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  posts Menu[]
 }
 
 model Order {
-  id       String @id @default(cuid())
-  quantity Int
-  tableID  String @map("table_id")
-  table    Table  @relation(fields: [tableID], references: [id], onDelete: Cascade)
-  cart     Cart[]
-  menuID   String @map("menu_id")
-  menu     Menu   @relation(fields: [menuID], references: [id], onDelete: Cascade)
+  id        Int      @id @default(autoincrement())
+  quantity  Int
+  tableID   String
+  table     Table    @relation(fields: [tableID], references: [id], onDelete: Cascade)
+  cartID    Int
+  cart      Cart     @relation(fields: [cartID], references: [id], onDelete: Cascade)
+  menuID    Int
+  menu      Menu     @relation(fields: [menuID], references: [id], onDelete: Cascade)
+  status    String?  @default("pending..")
+  createdAt DateTime @default(now())
 }
 
 model Cart {
-  id      String @id @default(cuid())
-  menuID  String @map("menu_id")
-  orderID String @map("order_id")
-  tableID String @map("table_id")
-  table   Table  @relation(fields: [tableID], references: [id], onDelete: Cascade)
-  menu    Menu   @relation(fields: [menuID], references: [id], onDelete: Cascade)
-  order   Order  @relation(fields: [orderID], references: [id], onDelete: Cascade)
+  id       Int     @id @default(autoincrement())
+  quantity Int
+  tableID  String
+  table    Table   @relation(fields: [tableID], references: [id], onDelete: Cascade)
+  menuID   Int
+  menu     Menu    @relation(fields: [menuID], references: [id], onDelete: Cascade)
+  status   String? @default("waiting to send..")
+  order    Order[]
 }
 
 model Bill {
@@ -124,15 +128,20 @@ model Guest {
   bill  Bill[]
 }
 
+model quantity {
+  id       Int @id @default(autoincrement())
+  quantity Int @default(0)
+}
+
+enum Status {
+  IDLE
+  EATTING
+  PAID
+}
+
 enum Role {
   MANAGER
   CHEF
   WAITER
   CASHIER
-}
-
-enum Category {
-  DRINK
-  DESSERT
-  FOOD
 }

@@ -160,7 +160,7 @@ function Home() {
 
   return (
     <>
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex justify-center items-center">
         <div className="w-full md:w-[calc(50%-16px)] p-2 md:h-[90dvh] rounded-xl flex flex-col justify-center items-center">
           <div
             className="flex items-center text-2xl p-3"

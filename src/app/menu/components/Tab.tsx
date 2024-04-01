@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import styled from 'styled-components'; // import styled-components
 import {
   Table,
   TableBody,
@@ -8,14 +9,11 @@ import {
   TableRow,
   Typography,
   Paper,
-  Button,
   IconButton,
 } from '@mui/material';
-import QuantityControl from "./QuantityControl";
 import AddShoppingCartOutlinedIcon from '@mui/icons-material/AddShoppingCartOutlined';
 import Tooltip from '@mui/material/Tooltip';
 import axios from "axios";
-
 
 interface MenuItems {
   id: string;
@@ -23,6 +21,9 @@ interface MenuItems {
   price: number;
 }
 
+const StyledTableCell = styled(TableCell)`
+  /* Add your styles here if needed */
+`;
 
 const StickyHeadTable: React.FC = () => {
   const [page, setPage] = React.useState(0);
@@ -52,32 +53,16 @@ const StickyHeadTable: React.FC = () => {
     setPage(0);
   };
 
-  // const handleIncrement = (index: number) => {
-  //   setMenu((prevRows) => {
-  //     const newRows = [...prevRows];
-  //     newRows[index].food_amount = Math.max(0, newRows[index].food_amount + 0.5);
-  //     return newRows;
-  //   });
-  // };
-
-  // const handleDecrement = (index: number) => {
-  //   setRows((prevRows) => {
-  //     const newRows = [...prevRows];
-  //     newRows[index].food_amount = Math.max(0, newRows[index].food_amount - 0.5);
-  //     return newRows;
-  //   });
-  // };
-
   return (
     <div>
       <TableContainer component={Paper}>
         <Table stickyHeader aria-label="sticky table" >
           <TableHead>
             <TableRow>
-              <TableCell >No.</TableCell>
-              <TableCell >Name</TableCell>
-              <TableCell >Price</TableCell>
-              <TableCell >Action</TableCell>
+              <StyledTableCell>No.</StyledTableCell>
+              <StyledTableCell>Name</StyledTableCell>
+              <StyledTableCell>Price</StyledTableCell>
+              <StyledTableCell>Action</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -85,29 +70,18 @@ const StickyHeadTable: React.FC = () => {
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => (
                 <TableRow key={row.id}>
-                  <TableCell >{index + 1}</TableCell>
-                  <TableCell >
+                  <StyledTableCell>{index + 1}</StyledTableCell>
+                  <StyledTableCell>
                     <Typography variant="body1">{row.name}</Typography>
-                  </TableCell>
-                  <TableCell>{row.price} บาท</TableCell>
-                  {/* <TableCell className={classes.tableCell}>
-                    <QuantityControl
-                      count={row.food_amount}
-                      handleIncrement={() => handleIncrement(page * rowsPerPage + index)}
-                      handleDecrement={() => handleDecrement(page * rowsPerPage + index)}
-                    />
-                  </TableCell> */}
-                  <TableCell>
-                    {/* <Button
-                      className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900=">
-                      ADD
-                    </Button> เผื่ออยากกลับมาใช้ปุ่ม */}
-                  <Tooltip title="Add to cart" arrow>
-                    <IconButton>
-                      <AddShoppingCartOutlinedIcon />
-                    </IconButton>
-                  </Tooltip>
-                  </TableCell>
+                  </StyledTableCell>
+                  <StyledTableCell>{row.price} บาท</StyledTableCell>
+                  <StyledTableCell>
+                    <Tooltip title="Add to cart" arrow>
+                      <IconButton>
+                        <AddShoppingCartOutlinedIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </StyledTableCell>
                 </TableRow>
               ))}
           </TableBody>

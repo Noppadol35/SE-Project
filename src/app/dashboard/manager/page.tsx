@@ -1,4 +1,4 @@
-import  { ManagerPage }  from '@/components/Dashboard/Manager/managePage';
+import   ManagerPage   from '@/components/Dashboard/Manager/managePage';
 
 
 export const metadata = {

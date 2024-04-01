@@ -27,7 +27,7 @@ export type Menu = {
 
 export type Table = {
     id: string;
-    number: number;
+    name: string;
     capacity: number;
     status: string;
     order: Order;

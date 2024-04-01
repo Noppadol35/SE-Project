@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
             mode: 'insensitive'
         },
     }
-
+    try{
     const posts = await prisma.table.findMany(
         {
             where: whereCondition as any,
@@ -34,6 +34,11 @@ export async function GET(request: NextRequest) {
         }
     })
     return Response.json(posts)
+    }catch (error) {
+        return new Response(error as BodyInit, { 
+            status: 500,
+        })
+    }
 
 }
 
@@ -47,7 +52,7 @@ export async function POST(request: Request) {
                 
                 name,
                 capacity,          
-                statusId: String(statusId),
+                statusId: Number(statusId),
                 
             }
         })

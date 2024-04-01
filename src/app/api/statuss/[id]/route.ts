@@ -7,8 +7,8 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const statusId = String(params.id)
-    const statusWithPosts = await prisma.status.findUnique({
+    const statusId = Number(params.id)
+    const statusWithPosts = await prisma..findUnique({
       where: { id: statusId },
       include: {
         posts: true, // Include related posts in the response
@@ -29,7 +29,7 @@ export async function PUT(
   try {
     const { name } = await req.json()
     const status = await prisma.status.update({
-      where: { id: String(params.id) },
+      where: { id: Number(params.id) },
       data: { name },
     })
     return Response.json(status)
@@ -47,7 +47,7 @@ export async function DELETE(
   try {
     return Response.json(
       await prisma.status.delete({
-        where: { id: String(params.id) },
+        where: { id: Number(params.id) },
       })
     )
   } catch (error) {

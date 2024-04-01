@@ -31,10 +31,10 @@ export async function PUT(
 
       where: { id: postId },
       data: {
-                 
+
         capacity:Number(capacity),
-        statusId:String(statusId),          
-  
+        statusId:Number(statusId),
+
     }
     })
     return Response.json(updatePost)

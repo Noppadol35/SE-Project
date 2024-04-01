@@ -18,6 +18,8 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
+import { Alert, AlertTitle } from '@mui/material';
+
 
 const styling = {
   container: {
@@ -96,9 +98,10 @@ const Edit = ({ params }: { params: { id: string } }) => {
     event.preventDefault();
 
     try {
+      setStatusId("2");
       await axios.put(`http://localhost:3000/api/posts/${id}`, {
         capacity,
-        statusId,
+        statusId: "2",
       });
       router.push("http://localhost:3000/cashierPage");
       window.open(
@@ -131,7 +134,15 @@ const Edit = ({ params }: { params: { id: string } }) => {
   const [open, setOpen] = React.useState(false);
   const [open2, setOpen2] = React.useState(false);
 
+  const [showError, setShowError] = React.useState(false);
+
   const handleClickOpen = () => {
+    if (!capacity || isNaN(Number(capacity)) || Number(capacity) <= 0){
+      
+      setShowError(true);
+      
+      return;
+    }
     setOpen(true);
   };
 
@@ -154,6 +165,7 @@ const Edit = ({ params }: { params: { id: string } }) => {
     return status === "EATING" ? "#FF0000" : "#00FF00";
   };
 
+  
   return (
     <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
       <CssBaseline />
@@ -193,7 +205,7 @@ const Edit = ({ params }: { params: { id: string } }) => {
                       p: 2,
                     }}
                     variant="contained"
-                    href={`/cashierPage/component/table/${table.id}`}
+                    href={`http://localhost:3000/cashierPage/component/table/${table.id}`}
                   >
                     <Box
                       height={80}
@@ -259,14 +271,19 @@ const Edit = ({ params }: { params: { id: string } }) => {
                 value={capacity}
                 onChange={(e) => setCapacity(e.target.value)}
               />
-
+                {showError && (
+                  <Alert variant="filled" severity="error" onClose={() => setShowError(false)}>
+                    <AlertTitle>Error</AlertTitle>
+                    Please enter a valid number for Capacity
+                  </Alert>
+                )}    
               <RadioGroup
                 value={statusId}
+                
                 onChange={(e) => setStatusId(e.target.value)}
               >
                 {statuss.map((sta: any) => (
                   <FormControlLabel
-                    key={sta.id}
                     value={sta.id}
                     label={sta.name}
                     control={<Radio />}
@@ -274,6 +291,8 @@ const Edit = ({ params }: { params: { id: string } }) => {
                 ))}
               </RadioGroup>
             </Box>
+
+              
 
             {/* ส่วนแสดงปุ่ม ปริ้น QR, ปุ่ม Checkout */}
 

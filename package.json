@@ -42,6 +42,7 @@
     "next": "^14.1.4",
     "next-auth": "^4.24.6",
     "node-jose": "^2.2.0",
+    "qrcode.react": "^3.1.0",
     "react": "^18.2.0",
     "react-dom": "^18",
     "react-icons": "^5.0.1",

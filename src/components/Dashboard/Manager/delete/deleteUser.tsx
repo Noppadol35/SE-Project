@@ -4,6 +4,7 @@ import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import axios from "axios";
 
 const style = {
     position: "absolute" as "absolute",
@@ -19,39 +20,34 @@ const style = {
     pb: 3,
 };
 
-function ChildModal() {
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => {
-        setOpen(true);
+interface DeleteUserProps {
+    userData: {
+        id: string;
+        name: string;
+        email: string;
+        phone: string;
+        role: string;
     };
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    return (
-        <React.Fragment>
-            {/* Wrap the inner Button with a div or React Fragment */}
-            <div>
-                <Button
-                    onClick={handleOpen}
-                    startIcon={<CheckBoxIcon />}
-                    variant="contained"
-                    className=" bg-green-600 font-bold hover:bg-green-700"
-                >
-                    Confirm
-                </Button>
-            </div>
-        </React.Fragment>
-    );
 }
 
-export default function DeleteUser() {
+export default function DeleteUser(props: DeleteUserProps) {
     const [open, setOpen] = React.useState(false);
+    const { userData } = props;
     const handleOpen = () => {
         setOpen(true);
     };
     const handleClose = () => {
         setOpen(false);
+    };
+
+    const handleSubmit = async (e: any) => {
+        e.preventDefault();
+        try {
+            await axios.delete(`/api/user/${userData.id}`);
+            handleClose();
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (
@@ -73,11 +69,18 @@ export default function DeleteUser() {
                         🗑️ Delete ?
                     </h2>
                     <p id="parent-modal-description" className=" m-3 ">
-                        {
-                            "👉🏻 Are you sure you want to delete this {user.name} ?"
-                        }
+                        {`👉🏻 Are you sure you want to delete this ${userData} ?`}
                     </p>
-                    <ChildModal />
+                    <div>
+                        <Button
+                            onClick={handleSubmit}
+                            startIcon={<CheckBoxIcon />}
+                            variant="contained"
+                            className=" bg-green-600 font-bold hover:bg-green-700"
+                        >
+                            Confirm
+                        </Button>
+                    </div>
                 </Box>
             </Modal>
         </div>

@@ -3,6 +3,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import * as yup from "yup";
 import { MenuItem, Select } from "@mui/material";
+import axios from "axios";
 
 const MyForm = () => {
     const schema = yup.object().shape({
@@ -70,7 +71,12 @@ const MyForm = () => {
             console.log("Phone: ", inputPhone);
             console.log("Role: ", inputRole);
 
-            //api call---------------------------------------
+            const res = await axios.post("http://localhost:3000/api/user", {
+                name: inputName,
+                email: inputEmail,
+                phone: inputPhone,
+                role: inputRole,
+            });
 
             setInputName("");
             setInputEmail("");

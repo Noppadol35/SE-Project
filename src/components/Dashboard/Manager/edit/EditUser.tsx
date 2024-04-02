@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import EditIcon from "@mui/icons-material/Edit";
+import axios from "axios";
 
 import * as yup from "yup";
 import { MenuItem, Select, TextField } from "@mui/material";
@@ -24,11 +25,10 @@ const style = {
 
 interface EditUserProps {
     userData: {
-        id: number;
+        id: string;
         name: string;
-        phone: string;
         email: string;
-        password: string;
+        phone: string;
         role: string;
     };
 }
@@ -86,8 +86,8 @@ export default function EditUser(props: EditUserProps) {
                 },
                 { abortEarly: false }
             );
-        } catch (error: any) {
-            error.inner.forEach((e: any) => {
+        } catch (validationError: any) {
+            validationError.inner.forEach((e: any) => {
                 if (e.path === "name") {
                     setTextErrorName(e.message);
                     setErrorName(true);
@@ -101,21 +101,28 @@ export default function EditUser(props: EditUserProps) {
                     setErrorPhone(true);
                 }
             });
+            return;
         }
 
-        if (!errorName && !errorEmail && !errorPhone) {
-            console.log("Pass validation");
-            console.log("Name: ", inputName);
+        console.log("Pass validation");
+        console.log("Name: ", inputName);
+        console.log("Email: ", inputEmail);
+        console.log("Phone: ", inputPhone);
+        console.log("Role: ", inputRole);
 
-            console.log("Email: ", inputEmail);
-            console.log("Phone: ", inputPhone);
-            console.log("Role: ", inputRole);
 
-            //api call---------------------------------------
-
-            setInputName("");
-            setInputEmail("");
-            setInputPhone("");
+        try {
+            const res = await axios.put(`/api/user/${userData.id}`, {
+                name: inputName,
+                email: inputEmail,
+                phone: inputPhone,
+                role: inputRole,
+            });
+            window.close();
+            console.log(res.data);
+        } catch (error) {
+            console.log("Error while submitting form:", error);
+            // Handle network errors, server errors, etc.
         }
     };
 
@@ -127,6 +134,7 @@ export default function EditUser(props: EditUserProps) {
             >
                 <EditIcon />
             </Button>
+
             <Modal
                 open={open}
                 onClose={handleClose}

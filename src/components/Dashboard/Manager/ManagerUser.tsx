@@ -10,43 +10,11 @@ import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import AddUser from "@/components/Dashboard/Manager/add/AddUser";
 import EditUser from "@/components/Dashboard/Manager/edit/EditUser";
+import axios from "axios";
 
 import DeleteUser from "@/components/Dashboard/Manager/delete/deleteUser";
+import { User } from "@/types/entity";
 
-const rows = [
-    {
-        id: 1,
-        name: "อรรถพร ศึกสพ",
-        phone: "0923942293",
-        email: "new@gmail.com",
-        password: "1212312121",
-        role: "MANAGER",
-    },
-    {
-        id: 2,
-        name: "นพดล พรมเทศ",
-        phone: "0654943309",
-        email: "purm@gmail.com",
-        password: "10101011",
-        role: "CASHIER",
-    },
-    {
-        id: 3,
-        name: "วรวิบูล มั่งมี",
-        phone: "0987654321",
-        email: "ohm@gmail.com",
-        password: "00110022",
-        role: "WAITER",
-    },
-    {
-        id: 4,
-        name: "ธนพ แสงจันทร์",
-        phone: "0983213321",
-        email: "view@gmail.com",
-        password: "112232211",
-        role: "CHEF",
-    },
-];
 
 const style = {
     position: "absolute" as "absolute",
@@ -61,6 +29,16 @@ const style = {
 };
 
 export function UserData() {
+    let [rows, setRows] = React.useState<User[]>([]);
+
+    React.useEffect(() => {
+        axios.get("/api/user").then((res) => {
+            setRows(res.data);
+            console.log(res.data);
+            
+        });
+    }, []);
+
     return (
         <div>
             <Grid container justifyContent="flex-end" marginBottom={2}>
@@ -71,9 +49,6 @@ export function UserData() {
                     <TableHead>
                         <TableRow>
                             <TableCell align="center" className="font-bold">
-                                No.
-                            </TableCell>
-                            <TableCell align="center" className="font-bold">
                                 Name
                             </TableCell>
                             <TableCell align="center" className="font-bold">
@@ -81,9 +56,6 @@ export function UserData() {
                             </TableCell>
                             <TableCell align="center" className="font-bold">
                                 Email
-                            </TableCell>
-                            <TableCell align="center" className="font-bold">
-                                Password
                             </TableCell>
                             <TableCell align="center" className="font-bold">
                                 Role
@@ -104,16 +76,13 @@ export function UserData() {
                                     },
                                 }}
                             >
-                                <TableCell align="center">{row.id}</TableCell>
+                                
                                 <TableCell align="center">{row.name}</TableCell>
                                 <TableCell align="center">
                                     {row.phone}
                                 </TableCell>
                                 <TableCell align="center">
                                     {row.email}
-                                </TableCell>
-                                <TableCell align="center">
-                                    {row.password}
                                 </TableCell>
                                 <TableCell align="center">{row.role}</TableCell>
                                 <TableCell align="center">
@@ -130,7 +99,7 @@ export function UserData() {
                                                 padding: 3,
                                             }}
                                         >
-                                            <DeleteUser />
+                                            <DeleteUser userData={row}/>
                                         </Button>
                                     </Grid>
                                 </TableCell>

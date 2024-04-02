@@ -70,6 +70,7 @@ model Table {
   order          Order[]
   bill           Bill[]
   cart           Cart[]
+  chefPage       ChefPage[]
 }
 
 model Menu {
@@ -97,6 +98,7 @@ model Order {
   menuID    Int
   menu      Menu     @relation(fields: [menuID], references: [id], onDelete: Cascade)
   status    String?  @default("pending..")
+  chefPage  ChefPage[]
   createdAt DateTime @default(now())
 }
 
@@ -132,6 +134,19 @@ model Guest {
 model quantity {
   id       Int @id @default(autoincrement())
   quantity Int @default(0)
+}
+
+model ChefPage {
+  id        Int  @id @default(autoincrement())
+  quantity  Int
+  menu      String 
+  status    String? @default("served")
+  order     Order @relation(fields: [orderID], references: [id], onDelete: Cascade)
+  orderID   Int
+  tableID   String
+  table     Table @relation(fields: [tableID], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  
 }
 
 enum Status {

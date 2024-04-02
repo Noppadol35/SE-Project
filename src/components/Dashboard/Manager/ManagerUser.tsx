@@ -39,6 +39,17 @@ export function UserData() {
         });
     }, []);
 
+    React.useEffect(() => {
+        const interval = setInterval(() => {
+            axios.get("http://localhost:3000/api/user").then((res) => {
+                setRows(res.data);
+                console.log("Data updated");
+            });
+        }, 5000); // ตั้งเวลาในการ Refech ข้อมูลทุก 5 วินาที
+
+        return () => clearInterval(interval);
+    }, [rows]);
+
     return (
         <div>
             <Grid container justifyContent="flex-end" marginBottom={2}>

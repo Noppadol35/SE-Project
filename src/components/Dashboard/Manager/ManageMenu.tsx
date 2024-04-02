@@ -36,6 +36,17 @@ export function Usermenu() {
             console.log(res.data);
         });
     }, []);
+
+    React.useEffect(() => {
+        const interval = setInterval(() => {
+            axios.get("http://localhost:3000/api/menus").then((res) => {
+                setRows(res.data);
+                console.log("Data updated");
+            });
+        }, 5000); // ตั้งเวลาในการ Refech ข้อมูลทุก 5 วินาที
+
+        return () => clearInterval(interval);
+    }, [rows]);
     return (
         <div>
             <Grid container justifyContent="flex-end" marginBottom={2}>
@@ -73,7 +84,9 @@ export function Usermenu() {
                             >
                                 <TableCell align="center">{row.id}</TableCell>
                                 <TableCell align="center">{row.name}</TableCell>
-                                <TableCell align="center">{row.category}</TableCell>
+                                <TableCell align="center">
+                                    {row.category}
+                                </TableCell>
                                 <TableCell align="center">
                                     <Grid
                                         container

@@ -43,7 +43,7 @@ function ElevationScroll(props: Props) {
 }
 
 
-const NavbarMenu = ({ params }: { params: { id: string } }) => {
+export default function NavbarMenu ({ params } : { params: { id: string } }) {
   const { id } = params;
   const router = useRouter();
   const [name, setname] = useState("");
@@ -120,5 +120,3 @@ const NavbarMenu = ({ params }: { params: { id: string } }) => {
     </React.Fragment>
     );
   }
-
-export default NavbarMenu;

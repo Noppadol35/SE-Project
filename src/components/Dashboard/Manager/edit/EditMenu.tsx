@@ -7,6 +7,7 @@ import EditIcon from "@mui/icons-material/Edit";
 
 import * as yup from "yup";
 import { MenuItem, Select, TextField } from "@mui/material";
+import axios from "axios";
 
 const style = {
     position: "absolute" as "absolute",
@@ -24,10 +25,7 @@ interface EditMenuProps {
     menuData: {
         id: number;
         name: string;
-        price: number;
-        image: string;
         category: string;
-        cart: string;
     };
 }
 
@@ -36,9 +34,9 @@ export default function EditMenu(props: EditMenuProps) {
     let [inputName, setInputName] = useState("");
     let [inputPrice, setInputPrice] = useState(0);
     let [inputCategory, setInputCategory] = useState("FOOD");
+
     React.useEffect(() => {
         setInputName(menuData.name);
-        setInputPrice(menuData.price);
         setInputCategory(menuData.category);
     }, [menuData]);
 
@@ -88,17 +86,20 @@ export default function EditMenu(props: EditMenuProps) {
             });
         }
 
-        if (!errorName && !errorPrice) {
-            console.log("Pass validation");
-            console.log("Name: ", inputName);
+        console.log("Pass validation");
+        console.log("Name: ", inputName);
+        console.log("Price: ", inputPrice);
+        console.log("Category: ", inputCategory);
 
-            console.log("Price: ", inputPrice);
-            console.log("Category: ", inputCategory);
-
-            //api call---------------------------------------
-
-            setInputName("");
-            setInputPrice(0);
+        try {
+            const res = await axios.put(`/api/menus/${menuData.id}`, {
+                name: inputName,
+                price: inputPrice,
+                category: inputCategory,
+            });
+            console.log(res.data);
+        } catch (error) {
+            console.error(error);
         }
     };
 
@@ -135,26 +136,14 @@ export default function EditMenu(props: EditMenuProps) {
                             helperText={textErrorName}
                             sx={{ width: "300px", marginBottom: "10px" }}
                         />
-                        <TextField
-                            label="Price*"
-                            value={inputPrice}
-                            onChange={(e) =>
-                                setInputPrice(parseFloat(e.target.value))
-                            }
-                            error={errorPrice}
-                            helperText={textErrorPrice}
-                            sx={{ width: "300px", marginBottom: "10px" }}
-                        />
                         <Select
                             value={inputCategory}
-                            label="Category"
+                            label="Category*"
                             onChange={(e) => setInputCategory(e.target.value)}
                         >
-                            <MenuItem value={"FOOD"} selected>
-                                Food
-                            </MenuItem>
-                            <MenuItem value={"SNACK"}>Snack</MenuItem>
-                            <MenuItem value={"DESSERT"}>Dessert</MenuItem>
+                            <MenuItem value={"FOOD"}>FOOD</MenuItem>
+                            <MenuItem value={"DRINK"}>DRINK</MenuItem>
+                            <MenuItem value={"DESSERT"}>DESSERT</MenuItem>
                         </Select>
                         <br />
                         <br />

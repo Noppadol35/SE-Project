@@ -12,40 +12,8 @@ import AddMenu from "@/components/Dashboard/Manager/add/AddMenu";
 import EditMenu from "@/components/Dashboard/Manager/edit/EditMenu";
 import DeleteMenu from "./delete/deleteMenu";
 
-const rows = [
-    {
-        id: 1,
-        name: "เต้าหู้ชีส",
-        price: 0,
-        image: "null",
-        category: "FOOD",
-        cart: "null",
-    },
-    {
-        id: 2,
-        name: "สันนอกสไลด์หมู",
-        price: 0,
-        image: "null",
-        category: "FOOD",
-        cart: "null",
-    },
-    {
-        id: 3,
-        name: "ชีสทอด",
-        price: 0,
-        image: "null",
-        category: "SNACK",
-        cart: "null",
-    },
-    {
-        id: 4,
-        name: "ไอติมกะทิ",
-        price: 0,
-        image: "null",
-        category: "DESSERT",
-        cart: "null",
-    },
-];
+import { Menu } from "@/types/entity";
+import axios from "axios";
 
 const style = {
     position: "absolute" as "absolute",
@@ -60,8 +28,14 @@ const style = {
 };
 
 export function Usermenu() {
-    function handleEditClick(Name: string) {}
+    let [rows, setRows] = React.useState<Menu[]>([]);
 
+    React.useEffect(() => {
+        axios.get("http://localhost:3000/api/menus").then((res) => {
+            setRows(res.data);
+            console.log(res.data);
+        });
+    }, []);
     return (
         <div>
             <Grid container justifyContent="flex-end" marginBottom={2}>
@@ -99,9 +73,7 @@ export function Usermenu() {
                             >
                                 <TableCell align="center">{row.id}</TableCell>
                                 <TableCell align="center">{row.name}</TableCell>
-                                <TableCell align="center">
-                                    {row.category}
-                                </TableCell>
+                                <TableCell align="center">{row.category}</TableCell>
                                 <TableCell align="center">
                                     <Grid
                                         container
@@ -117,7 +89,7 @@ export function Usermenu() {
                                                 color: "grey",
                                             }}
                                         >
-                                            <DeleteMenu />
+                                            <DeleteMenu menuData={row} />
                                         </Button>
                                     </Grid>
                                 </TableCell>

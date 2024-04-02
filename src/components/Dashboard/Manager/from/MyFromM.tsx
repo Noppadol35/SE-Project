@@ -3,6 +3,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import * as yup from "yup";
 import { MenuItem, Select } from "@mui/material";
+import axios from "axios";
 
 const MyFormM = () => {
     const schema = yup.object().shape({
@@ -11,14 +12,24 @@ const MyFormM = () => {
             .required("Name is required")
             .min(3, "Name must be at least 3 characters"),
         price: yup
-            .string()
-            .matches(/^[0-9]+$/, "Price must be a number")
-            .min(1, "Price must be at least 1 characters"),
+            .number()
+            .required("Price is required")
+            .positive("Price must be a positive number"),
         category: yup.string().required("Category is required"),
     });
 
+    let [open, setOpen] = useState(false);
+
+    let handleOpen = () => {
+        setOpen(true);
+    };
+
+    let handleClose = () => {
+        setOpen(false);
+    }
+
     let [inputName, setInputName] = useState("");
-    let [inputPrice, setInputPrice] = useState("");
+    let [inputPrice, setInputPrice] = useState(0);
     let [inputCategory, setInputCategory] = useState("FOOD");
 
     const [errorName, setErrorName] = useState(false);
@@ -54,14 +65,24 @@ const MyFormM = () => {
         if (!errorName && !errorPrice) {
             console.log("Pass validation");
             console.log("Name: ", inputName);
-
             console.log("Price: ", inputPrice);
             console.log("Category: ", inputCategory);
 
-            //api call---------------------------------------
+            try {
+                const res = await axios.post("/api/menus", {
+                    name: inputName,
+                    price: inputPrice,
+                    category: inputCategory,
+                });
+                handleClose();
+                console.log(res.data);
+            } catch (error) {
+                console.error(error);
+            }
 
             setInputName("");
-            setInputPrice("");
+            setInputPrice(0);
+            setInputCategory("FOOD");
         }
     };
 
@@ -77,8 +98,9 @@ const MyFormM = () => {
             />
             <TextField
                 label="Price*"
+                type="number"
                 value={inputPrice}
-                onChange={(e) => setInputPrice(e.target.value)}
+                onChange={(e) => setInputPrice(parseInt(e.target.value))}
                 error={errorPrice}
                 helperText={textErrorPrice}
                 sx={{ width: "300px", marginBottom: "10px" }}
@@ -89,10 +111,10 @@ const MyFormM = () => {
                 onChange={(e) => setInputCategory(e.target.value)}
             >
                 <MenuItem value={"FOOD"} selected>
-                    Food
+                    FOOD
                 </MenuItem>
-                <MenuItem value={"SNACK"}>Snack</MenuItem>
-                <MenuItem value={"DESSERT"}>Dessert</MenuItem>
+                <MenuItem value={"DRINK"}>DRINK</MenuItem>
+                <MenuItem value={"DESSERT"}>DESSERT</MenuItem>
             </Select>
             <br />
             <br />

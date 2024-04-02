@@ -73,19 +73,18 @@ model Table {
 }
 
 model Menu {
-  id         Int      @id @default(autoincrement())
-  name       String   @unique
-  price      Float
-  categoryID Int
-  category   Category @relation(fields: [categoryID], references: [id])
-  cart       Cart[]
-  order      Order[]
+  id       Int      @id @default(autoincrement())
+  name     String   @unique
+  price    Float
+  category Category @default(FOOD)
+  cart     Cart[]
+  order    Order[]
 }
 
-model Category {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
-  posts Menu[]
+enum Category {
+  FOOD
+  DRINK
+  DESSERT
 }
 
 model Order {
@@ -113,12 +112,14 @@ model Cart {
 }
 
 model Bill {
-  id      String @id @default(cuid())
-  guestID String @map("guest_id")
-  tableID String @map("table_id")
-  total   Float
-  guest   Guest  @relation(fields: [guestID], references: [id], onDelete: Cascade)
-  table   Table  @relation(fields: [tableID], references: [id], onDelete: Cascade)
+  id        String     @id @default(cuid())
+  guestID   String     @map("guest_id")
+  tableID   String     @map("table_id")
+  total     Float
+  status    BillStatus @default(UNPAID)
+  guest     Guest      @relation(fields: [guestID], references: [id], onDelete: Cascade)
+  table     Table      @relation(fields: [tableID], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
 }
 
 model Guest {
@@ -137,6 +138,11 @@ enum Status {
   IDLE
   EATTING
   PAID
+}
+
+enum BillStatus {
+  PAID
+  UNPAID
 }
 
 enum Role {

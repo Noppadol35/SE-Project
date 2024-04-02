@@ -7,39 +7,10 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import Button from "@mui/material/Button";
-import DeleteIcon from "@mui/icons-material/Delete";
+import moment from "moment";
 
-const rows = [
-    {
-        id: 1,
-        total: "299",
-        table: 1,
-        guest: 110,
-        status: "Paied",
-    },
-    {
-        id: 2,
-        total: "318",
-        table: 4,
-        guest: 111,
-        status: "Paied",
-    },
-    {
-        id: 3,
-        total: "299",
-        table: 5,
-        guest: 112,
-        status: "Paied",
-    },
-    {
-        id: 4,
-        total: "359",
-        table: 9,
-        guest: 114,
-        status: "Paied",
-    },
-];
+import axios from "axios";
+import { Bill } from "@/types/entity";
 
 const style = {
     position: "absolute" as "absolute",
@@ -54,6 +25,15 @@ const style = {
 };
 
 export function Userhistory() {
+    let [rows, setRows] = React.useState<Bill[]>([]);
+
+    React.useEffect(() => {
+        axios.get("http://localhost:3000/api/history").then((res) => {
+            setRows(res.data);
+            console.log(res.data);
+        });
+    }, []);
+
     return (
         <div>
             <TableContainer component={Paper}>
@@ -72,6 +52,9 @@ export function Userhistory() {
                             <TableCell align="center" className="font-bold">
                                 Status
                             </TableCell>
+                            <TableCell align="center" className="font-bold">
+                                Date
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -85,16 +68,21 @@ export function Userhistory() {
                                 }}
                             >
                                 <TableCell align="center">
-                                    {row.table}
+                                    {row.table?.id}
                                 </TableCell>
                                 <TableCell align="center">
-                                    {row.guest}
+                                    {row.guest?.id}
                                 </TableCell>
                                 <TableCell align="center">
                                     {row.total}
                                 </TableCell>
                                 <TableCell align="center">
                                     {row.status}
+                                </TableCell>
+                                <TableCell align="center">
+                                    {moment(row.date).format(
+                                        "YYYY-MM-DD HH:mm:ss"
+                                    )}
                                 </TableCell>
                             </TableRow>
                         ))}

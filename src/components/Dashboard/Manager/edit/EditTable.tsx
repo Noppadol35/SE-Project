@@ -7,6 +7,7 @@ import EditIcon from "@mui/icons-material/Edit";
 
 import * as yup from "yup";
 import { MenuItem, Select, TextField } from "@mui/material";
+import axios from "axios";
 
 const style = {
     position: "absolute" as "absolute",
@@ -22,13 +23,10 @@ const style = {
 
 interface EditTableProps {
     userTable: {
-        id: number;
+        id: string;
         name: string;
         capacity: number;
         status: string;
-        order: string;
-        cart: string;
-        bill: string;
     };
 }
 
@@ -36,7 +34,7 @@ export default function EditTable(props: EditTableProps) {
     const { userTable } = props;
     let [inputName, setInputName] = useState("");
     let [inputCapacity, setInputCapacity] = useState(0);
-    let [inputStatus, setInputStatus] = useState("AVAILABLE");
+    let [inputStatus, setInputStatus] = useState("IDLE");
     React.useEffect(() => {
         setInputName(userTable.name);
         setInputCapacity(userTable.capacity);
@@ -72,7 +70,7 @@ export default function EditTable(props: EditTableProps) {
                 {
                     name: inputName,
                     capacity: inputCapacity,
-                    role: inputStatus,
+                    status: inputStatus,
                 },
                 { abortEarly: false }
             );
@@ -89,17 +87,20 @@ export default function EditTable(props: EditTableProps) {
             });
         }
 
-        if (!errorName && !errorCapacity) {
-            console.log("Pass validation");
-            console.log("Name: ", inputName);
-            console.log("Capacity: ", inputCapacity);
+        console.log("Pass validation");
+        console.log("Name: ", inputName);
+        console.log("Capacity: ", inputCapacity);
+        console.log("Status: ", inputStatus);
 
-            console.log("Status: ", inputStatus);
-
-            //api call---------------------------------------
-
-            setInputName("");
-            setInputCapacity(0);
+        try{
+            const res = await axios.put(`/api/table/${userTable.id}`, {
+                name: inputName,
+                capacity: inputCapacity,
+                status: inputStatus,
+            });
+            console.log(res);
+        } catch (error){
+            console.log( " Error While sumitting form :", error);
         }
     };
 
@@ -152,12 +153,9 @@ export default function EditTable(props: EditTableProps) {
                             label="Status*"
                             onChange={(e) => setInputStatus(e.target.value)}
                         >
-                            <MenuItem value={"AVAILABLE"} selected>
-                                Available
-                            </MenuItem>
-                            <MenuItem value={"UNAVAILABLE"}>
-                                Unavailable
-                            </MenuItem>
+                            <MenuItem value={"IDLE"} selected>IDLE</MenuItem>
+                            <MenuItem value={"EATTING"}>EATTING</MenuItem>
+                            <MenuItem value={"PAID"}>PAID</MenuItem>
                         </Select>
                         <br />
                         <br />

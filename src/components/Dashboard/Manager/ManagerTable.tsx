@@ -11,51 +11,22 @@ import Grid from "@mui/material/Grid";
 import EditTable from "@/components/Dashboard/Manager/edit/EditTable";
 import AddTable from "@/components/Dashboard/Manager/add/AddTable";
 import DeleteTable from "@/components/Dashboard/Manager/delete/deleteTable";
+import axios from "axios";
 
-const rows = [
-    {
-        id: 1,
-        name: "Table 1",
-        number: 1,
-        capacity: 5,
-        status: "AVAILABLE",
-        order: "null",
-        cart: "null",
-        bill: "null",
-    },
-    {
-        id: 2,
-        name: "Table 2",
-        number: 2,
-        capacity: 4,
-        status: "AVAILABLE",
-        order: "null",
-        cart: "null",
-        bill: "null",
-    },
-    {
-        id: 3,
-        name: "Table 3",
-        number: 3,
-        capacity: 6,
-        status: "AVAILABLE",
-        order: "null",
-        cart: "null",
-        bill: "null",
-    },
-    {
-        id: 4,
-        name: "Table 4",
-        number: 4,
-        capacity: 2,
-        status: "AVAILABLE",
-        order: "null",
-        cart: "null",
-        bill: "null",
-    },
-];
+import { TableEntity } from "@/types/entity";
+
 
 export function UserTable() {
+
+    let [rows, setRows] = React.useState<TableEntity[]>([]);
+
+    React.useEffect(() => {
+        axios.get("http://localhost:3000/api/table").then((res) => {
+            setRows(res.data);
+        });
+        console.log(rows);
+    }, []);
+
     const [open, setOpen] = React.useState(false);
 
     const handleClickOpen = () => {
@@ -76,9 +47,6 @@ export function UserTable() {
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
                         <TableRow>
-                            <TableCell align="center" className="font-bold">
-                                No.
-                            </TableCell>
                             <TableCell align="center" className="font-bold">
                                 Name
                             </TableCell>
@@ -101,9 +69,6 @@ export function UserTable() {
                                     },
                                 }}
                             >
-                                <TableCell align="center">
-                                    {row.number}
-                                </TableCell>
                                 <TableCell align="center">{row.name}</TableCell>
                                 <TableCell align="center">
                                     {row.status}
@@ -126,7 +91,7 @@ export function UserTable() {
                                                 color: "grey",
                                             }}
                                         >
-                                            <DeleteTable />
+                                            <DeleteTable useTable={row} />
                                         </Button>
                                     </Grid>
                                 </TableCell>

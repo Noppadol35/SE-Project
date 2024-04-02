@@ -4,6 +4,7 @@ import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import axios from "axios";
 
 const style = {
     position: "absolute" as "absolute",
@@ -19,37 +20,35 @@ const style = {
     pb: 3,
 };
 
-function ChildModal() {
-    const [open, setOpen] = React.useState(false);
-    const handleOpen = () => {
-        setOpen(true);
+interface DeleteTableProps {
+    useTable: {
+        id: string;
+        name: string;
+        capacity: number;
+        status: string;
     };
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    return (
-        <React.Fragment>
-            <Button
-                onClick={handleOpen}
-                startIcon={<CheckBoxIcon />}
-                variant="contained"
-                className=" bg-green-600 font-bold hover:bg-green-700"
-            >
-                Confirm
-            </Button>
-        </React.Fragment>
-    );
 }
 
-export default function DeleteTable() {
+export default function DeleteTable(props: DeleteTableProps) {
     const [open, setOpen] = React.useState(false);
+    const { useTable } = props;
     const handleOpen = () => {
         setOpen(true);
     };
     const handleClose = () => {
         setOpen(false);
     };
+
+    const handleSubmit = async (e: any) => {
+        e.preventDefault();
+        try {
+            await axios.delete(`/api/table/${useTable.id}`);
+            handleClose();
+            console.log("Deleted");
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     return (
         <div>
@@ -74,7 +73,16 @@ export default function DeleteTable() {
                             "👉🏻 Are you sure you want to delete this {table.name} ?"
                         }
                     </p>
-                    <ChildModal />
+                    <div>
+                        <Button
+                            onClick={handleSubmit}
+                            startIcon={<CheckBoxIcon />}
+                            variant="contained"
+                            className=" bg-green-600 font-bold hover:bg-green-700"
+                        >
+                            Confirm
+                        </Button>
+                    </div>
                 </Box>
             </Modal>
         </div>

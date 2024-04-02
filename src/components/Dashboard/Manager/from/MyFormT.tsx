@@ -2,29 +2,26 @@ import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import * as yup from "yup";
-import { MenuItem, Select } from "@mui/material";
+// import { MenuItem, Select } from "@mui/material";
+import axios from "axios";
 
 const MyFormT = () => {
     const schema = yup.object().shape({
-        number: yup
-            .string()
-            .matches(/^[0-9]+$/, "Number must be a number")
-            .min(1, "Number must be at least 1 characters"),
         name: yup
             .string()
             .required("Name is required")
             .min(3, "Name must be at least 3 characters"),
         capacity: yup
-            .string()
-            .matches(/^[0-9]+$/, "Capacity must be a number")
-            .min(1, "Capacity must be at least 1 characters"),
+            .number()
+            .positive("Capacity must be a positive number")
+            .integer("Capacity must be an integer")
+            .required("Capacity is required"),
         status: yup.string().required("Status is required"),
     });
 
-    let [inputNumber, setInputNumber] = useState("");
     let [inputName, setInputName] = useState("");
-    let [inputCapacity, setInputCapacity] = useState("");
-    let [inputStatus, setInputStatus] = useState("AVAILABLE");
+    let [inputCapacity, setInputCapacity] = useState(0);
+    // let [inputStatus, setInputStatus] = useState("IDLE");
 
     const [errorNumber, setErrorNumber] = useState(false);
     const [errorName, setErrorName] = useState(false);
@@ -39,10 +36,9 @@ const MyFormT = () => {
         try {
             await schema.validate(
                 {
-                    number: inputNumber,
                     name: inputName,
                     capacity: inputCapacity,
-                    role: inputStatus,
+                    // role: inputStatus,
                 },
                 { abortEarly: false }
             );
@@ -65,30 +61,28 @@ const MyFormT = () => {
 
         if (!errorName && !errorNumber && !errorCapacity) {
             console.log("Pass validation");
-            console.log("Number: ", inputNumber);
             console.log("Name: ", inputName);
             console.log("Capacity: ", inputCapacity);
+            // console.log("Status: ", inputStatus);
 
-            console.log("Status: ", inputStatus);
-
-            //api call---------------------------------------
-
-            setInputNumber("");
+            try {
+                console.log("Submitting form");
+                
+                const res = await axios.post("/api/table", {
+                    name: inputName,
+                    capacity: inputCapacity,
+                    
+                });
+                console.log("Response: ", res);
+            } catch (error) {
+                console.error("Error while submitting form:", error);
+            }
             setInputName("");
-            setInputCapacity("");
         }
     };
 
     return (
         <form onSubmit={handleSubmit}>
-            <TextField
-                label="Number*"
-                value={inputNumber}
-                onChange={(e) => setInputNumber(e.target.value)}
-                error={errorNumber}
-                helperText={textErrorNumber}
-                sx={{ width: "300px", marginBottom: "10px" }}
-            />
             <TextField
                 label="Name*"
                 value={inputName}
@@ -99,22 +93,24 @@ const MyFormT = () => {
             />
             <TextField
                 label="Capacity*"
+                type="number"
                 value={inputCapacity}
-                onChange={(e) => setInputCapacity(e.target.value)}
+                onChange={(e) => setInputCapacity(parseInt(e.target.value))}
                 error={errorCapacity}
                 helperText={textErrorCapacity}
                 sx={{ width: "300px", marginBottom: "10px" }}
             />
-            <Select
+            {/* <Select
                 value={inputStatus}
                 label="Status*"
                 onChange={(e) => setInputStatus(e.target.value)}
             >
-                <MenuItem value={"AVAILABLE"} selected>
-                    Available
+                <MenuItem value={"IDLE"} selected>
+                    IDLE
                 </MenuItem>
-                <MenuItem value={"UNAVAILABLE"}>Unavailable</MenuItem>
-            </Select>
+                <MenuItem value={"EATTING"}>EATTING</MenuItem>
+                <MenuItem value={"PAID"}>PAID</MenuItem>
+            </Select> */}
             <br />
             <br />
             <Button type="submit" variant="outlined">

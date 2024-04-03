@@ -11,15 +11,19 @@ export async function GET(
   try {
     
     const searchParams = request.nextUrl.searchParams
-    const orderID = Number(params.id)
-    const sort = searchParams.get('sort') || 'menuID'
-    const order = await prisma.orderR.findUnique({
+    const tableID = String(params.id)
+    const sort = searchParams.get('sort') || 'status'
+    const order = await prisma.order.findMany({
       where: { 
         
-        id: orderID
-
+        tableID: tableID
       },
-     
+      include: {
+        table: true,
+        menu: true, 
+      }, orderBy: {
+        status: sort === 'status' ? 'desc' : 'asc',      
+    } as any,
     })
     return Response.json(order)
   } catch (error) {
@@ -29,27 +33,22 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const { quantity } = await req.json()
-    // const { name } = await req.json()
-    const orderId = Number(params.id)
-    const updateorder = await prisma.orderR.update({
-
+    const { quantity, status } = await req.json();
+    const orderId = Number(params.id);
+    const updateorder = await prisma.order.update({
       where: { id: orderId },
       data: { 
         quantity,
-    },
-
-    })
-    return Response.json(updateorder)
+        status,
+      },
+    });
+    return { json: updateorder };
   } catch (error) {
     return new Response(error as BodyInit, {
       status: 500,
-    })
+    });
   }
 }
 
@@ -59,7 +58,7 @@ export async function DELETE(
 ) {
     try {
         const orderId = Number(params.id)
-        const deleteorder = await prisma.orderR.delete({
+        const deleteorder = await prisma.order.delete({
             where: { 
                 id: orderId
             },

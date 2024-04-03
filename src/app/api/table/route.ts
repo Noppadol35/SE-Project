@@ -2,13 +2,12 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-//get all tables
+// get all tables
 export async function GET() {
     try {
-        const tables = await prisma.table.findMany();
-        return Response.json(tables);
+        const allTables = await prisma.table.findMany();
+        return Response.json(allTables);
     } catch (error) {
-        console.error('Error fetching tables:', error);
         return new Response(error as BodyInit, { status: 500 });
     }
 }

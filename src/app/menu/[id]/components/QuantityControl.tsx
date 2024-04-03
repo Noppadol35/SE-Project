@@ -15,7 +15,7 @@ import {
   Button,
   IconButton,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+
 import AddShoppingCartOutlinedIcon from '@mui/icons-material/AddShoppingCartOutlined';
 import Tooltip from '@mui/material/Tooltip';
 

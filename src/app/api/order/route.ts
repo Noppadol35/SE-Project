@@ -1,10 +1,31 @@
+import { type NextRequest } from 'next/server'  
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const searchParams = request.nextUrl.searchParams
+  const search = searchParams.get('search') || ''
+  const sort = searchParams.get('sort') || 'desc'
+  const menu = searchParams.get('menu')
+
   try {
-    const order = await prisma.order.findMany()
+      const order = await prisma.order.findMany({
+          where: {
+            tableID: {
+              contains: search,
+              mode: 'insensitive'
+          },
+          
+      },
+      orderBy: {
+        createdAt: sort === 'DateTime' ? 'desc' : 'asc',
+      },
+          include: {
+            menu: true,
+    }
+  })
+
     return Response.json(order)
   } catch (error) {
     return new Response(error as BodyInit, {

@@ -22,7 +22,7 @@ export default function HeaderTabs() {
   const [userMenuOpened, setUserMenuOpened] = useState(false);
   const { data: session, update } = useSession();
 
-  console.log(session?.user?.name);
+  
 
   return (
     <div className={classes.header}>

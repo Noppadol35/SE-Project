@@ -15,31 +15,30 @@ import DeleteMenu from "./delete/deleteMenu";
 import { Menu } from "@/types/entity";
 import axios from "axios";
 
-const style = {
-    position: "absolute" as "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 400,
-    bgcolor: "background.paper",
-    border: "2px solid #000",
-    boxShadow: 24,
-    p: 4,
-};
+
 
 export function Usermenu() {
     let [rows, setRows] = React.useState<Menu[]>([]);
 
     React.useEffect(() => {
-        axios.get("http://localhost:3000/api/menus").then((res) => {
+        axios.get("http://localhost:3000/api/menu").then((res) => {
             setRows(res.data);
             console.log(res.data);
         });
     }, []);
 
+    const [menus, setCategories] = React.useState([]);
+    React.useEffect(() => {
+        axios.get(`http://localhost:3000/api/categories`).then((res) => {
+            setCategories(res.data);
+            console.log(res.data);
+        });
+    }, []);
+
+
     React.useEffect(() => {
         const interval = setInterval(() => {
-            axios.get("http://localhost:3000/api/menus").then((res) => {
+            axios.get("http://localhost:3000/api/menu").then((res) => {
                 setRows(res.data);
                 console.log("Data updated");
             });
@@ -73,7 +72,7 @@ export function Usermenu() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map((row) => (
+                        {rows.map((row: any) => (
                             <TableRow
                                 key={row.id}
                                 sx={{
@@ -85,7 +84,7 @@ export function Usermenu() {
                                 <TableCell align="center">{row.id}</TableCell>
                                 <TableCell align="center">{row.name}</TableCell>
                                 <TableCell align="center">
-                                    {row.category}
+                                    {row.category.name}
                                 </TableCell>
                                 <TableCell align="center">
                                     <Grid

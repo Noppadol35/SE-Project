@@ -54,7 +54,7 @@ const Edit = ({ params }: { params: { id: string } }) => {
   const router = useRouter();
   const [name, setname] = useState("");
   const [capacity, setCapacity] = useState("");
-  const [statusId, setStatusId] = useState("");
+  const [statusID, setStatusId] = useState("");
   const [statuss, setStatuss] = useState([]);
   const [posts, setPosts] = useState([]);
 
@@ -82,7 +82,7 @@ const Edit = ({ params }: { params: { id: string } }) => {
 
       setname(res.data.name || "");
       setCapacity(res.data.capacity);
-      setStatusId(res.data.statusId || "");
+      setStatusId(res.data.statusID || "");
     } catch (error) {
       console.error(error);
     }
@@ -101,7 +101,7 @@ const Edit = ({ params }: { params: { id: string } }) => {
       setStatusId("2");
       await axios.put(`http://localhost:3000/api/posts/${id}`, {
         capacity,
-        statusId: "2",
+        statusID: "2",
       });
       router.push("http://localhost:3000/cashierPage");
       window.open(
@@ -121,7 +121,7 @@ const Edit = ({ params }: { params: { id: string } }) => {
       setStatusId("1");
 
       await axios.put(`http://localhost:3000/api/posts/${id}`, {
-        statusId: "1",
+        statusID: "1",
         capacity: "0",
       });
 
@@ -205,7 +205,7 @@ const Edit = ({ params }: { params: { id: string } }) => {
                       p: 2,
                     }}
                     variant="contained"
-                    href={`http://localhost:3000/cashierPage/component/table/${table.id}`}
+                    href={`http://localhost:3000/dashboard/cashier/table/${table.id}`}
                   >
                     <Box
                       height={80}
@@ -278,7 +278,7 @@ const Edit = ({ params }: { params: { id: string } }) => {
                   </Alert>
                 )}    
               <RadioGroup
-                value={statusId}
+                value={statusID}
                 
                 onChange={(e) => setStatusId(e.target.value)}
               >

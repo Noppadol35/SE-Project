@@ -1,5 +1,10 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
-import styled from 'styled-components'; // import styled-components
+import axios from "axios";
+import Link from "next/link"
+import { useRouter } from "next/navigation";
+
 import {
   Table,
   TableBody,
@@ -9,84 +14,202 @@ import {
   TableRow,
   Typography,
   Paper,
+  Button,
   IconButton,
 } from '@mui/material';
-import AddShoppingCartOutlinedIcon from '@mui/icons-material/AddShoppingCartOutlined';
-import Tooltip from '@mui/material/Tooltip';
-import axios from "axios";
 
-interface MenuItems {
-  id: string;
-  name: string;
-  price: number;
-}
 
-const StyledTableCell = styled(TableCell)`
-  /* Add your styles here if needed */
-`;
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
 
-const StickyHeadTable: React.FC = () => {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(100); // Set default rows per page
-  const [menu, setMenu] = useState<MenuItems[]>([]);
 
-  useEffect(() => {
-    getMenu();
-  }, []);
 
-  async function getMenu() {
+
+
+
+const StickyHeadTable = ({ params }: { params: { id: string } }) => {
+  const router = useRouter();
+  const { id } = params;
+  
+  const [menu, setMenu] = useState([]);
+  
+  const [quantity, setQuantity] = useState('');
+  const [menuID, setMenuID] = useState("");
+  const [cart, setcartID] = useState("");
+  const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState([])
+  const [quantities, setQuantities] = useState([])
+  const [search, setSearch] = useState('')
+  const [sort, setSort] = useState('name');
+  const [name, setname] = useState("");
+  const [isInCart, setIsInCart] = useState(false);
+
+  
+  const fetchPostsTable = async (id: string) => {
     try {
-      const response = await axios.get("http://localhost:3000/api/menu");
-      setMenu(response.data);
-      console.log(response.data);
+      const res = await axios.get(`http://localhost:3000/api/posts/${id}`);
+
+      setname(res.data.name || "");
+      
     } catch (error) {
-      console.error("Error fetching menu data:", error);
+      console.error(error);
+    }
+  };
+
+  const fetchMenu = async () => {
+    try {
+      const query = new URLSearchParams({search, category}).toString()
+      const response = await axios.get(`http://localhost:3000/api/menu?${query}`)
+      setMenu(response.data);
+      
+    } catch (error) {
+      console.error(error);
     }
   }
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3000/api/categories`);
+      setCategories(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  const fetchCart = async () => {
+    try {
+      const response = await axios.get(`/api/Cart?tableID=${id}`);
+      const cartData = response.data;
+      const isItemInCart = cartData.some((item: any) => item.status === 'waiting to send..');
+      setIsInCart(isItemInCart);
+      setcartID(cartData);
+    } catch (error) {
+      console.error(error);
+    }
   };
+  
+ 
+  const handleApplyFilters = () => {
+    fetchMenu();
+    
+  }
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
+  const buttonClass = isInCart
+  ? "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full"
+  : "bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full";
+
+  useEffect(() => {
+    fetchPostsTable(id);
+    fetchMenu();
+    fetchCategories();
+    fetchCart();
+  }, [id]);
+
+  const handleAddToCart = async (menuId: number) => {
+    try {
+      const response = await axios.get(`/api/Cart?menuID=${menuId}&tableID=${id}`);
+      const isItemInCart = response.data.some((item: any) => item.status === 'waiting to send..');
+  
+      if (isItemInCart) {
+        
+        const itemToRemove = response.data.find((item: any) => item.status === 'waiting to send..');
+        await axios.delete(`/api/Cart/${itemToRemove.id}`);
+        
+      } else {
+        
+        await axios.post('/api/Cart', {
+          menuID: menuId,
+          quantity: 1,
+          tableID: id,
+          status: 'waiting to send..', 
+        });
+        
+      }
+      fetchCart(); 
+    } catch (error) {
+      console.error('Error adding/removing to/from cart:', error);
+    }
   };
+  
+
+
 
   return (
-    <div>
-      <TableContainer component={Paper}>
-        <Table stickyHeader aria-label="sticky table" >
-          <TableHead>
-            <TableRow>
-              <StyledTableCell>No.</StyledTableCell>
-              <StyledTableCell>Name</StyledTableCell>
-              <StyledTableCell>Price</StyledTableCell>
-              <StyledTableCell>Action</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {menu
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row, index) => (
-                <TableRow key={row.id}>
-                  <StyledTableCell>{index + 1}</StyledTableCell>
-                  <StyledTableCell>
-                    <Typography variant="body1">{row.name}</Typography>
-                  </StyledTableCell>
-                  <StyledTableCell>{row.price} บาท</StyledTableCell>
-                  <StyledTableCell>
-                    <Tooltip title="Add to cart" arrow>
-                      <IconButton>
-                        <AddShoppingCartOutlinedIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </StyledTableCell>
+    <div >
+      <Grid container justifyContent="center">
+        <Grid item xs={12} md={8}>
+        <div className="flex justify-between items-center mb-6">
+                <div className="flex gap-111">
+                  <input
+                    type="text"
+                    placeholder="Search by name.."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  >
+                    <option value="">Select Categories</option>
+                    {categories.map((cat: any) => (
+                      <option key={cat.id} value={cat.name}>
+                        {cat.name}
+                      </option>
+                    ))}
+                  </select>
+                  
+                  <button
+                    onClick={handleApplyFilters}
+                    className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors focus:outline-none"
+                  >
+                    Apply
+                  </button>
+                 
+                </div>
+              </div>
+          <TableContainer component={Paper}>
+
+            <Table stickyHeader aria-label="sticky table">
+              
+           
+              <TableHead>
+                <TableRow>
+                  <TableCell>NAME</TableCell>
+                  <TableCell align="left">CATEGORY</TableCell>
+                  <TableCell align="center">QUANTITY</TableCell>
                 </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              </TableHead>
+              <TableBody>
+                {menu.map((menu: any) => (
+                  <TableRow key={menu.id}>
+                    <TableCell >
+                      <Typography variant="body1">{menu.name}</Typography>
+                    </TableCell>
+                    <TableCell  align="left">
+                      <Typography variant="body1">{menu.category.name}</Typography>
+                    </TableCell>
+                    <TableCell  align="center">
+                        <Box sx={{ minWidth: 120 }}>
+                          <Button
+                            variant="contained" className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full"
+                           
+                            onClick={() => handleAddToCart(menu.id)}
+                          >
+                            {isInCart ? 'Remove from Cart' : 'Add to Cart'}
+                          </Button>
+                        </Box>
+                      </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Grid>
+      </Grid>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -62,30 +63,45 @@ model VerificationRequest {
 }
 
 model Table {
-  id             String  @id @default(cuid())
-  name           String  @unique
-  capacity       Int?    @default(0)
-  priceperperson Int?    @default(199)
-  status         Status  @default(IDLE)
+  id             String     @id @default(cuid())
+  name           String     @unique
+  capacity       Int?       @default(0)
+  priceperperson Int?       @default(199)
+  statusID       Int   
+  status         Status     @relation(fields: [statusID], references: [id])
   order          Order[]
   bill           Bill[]
   cart           Cart[]
   chefPage       ChefPage[]
+  createdAt      DateTime   @default(now())
+}
+
+model Status {
+  id    Int    @id @default(autoincrement())
+  name  String @unique@default("IDLE")
+  table Table[]
 }
 
 model Menu {
-  id       Int      @id @default(autoincrement())
-  name     String   @unique
-  price    Float
-  category Category @default(FOOD)
-  cart     Cart[]
-  order    Order[]
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  price      Float?   @default(0)
+  categoryID Int
+  category   Category @relation(fields: [categoryID], references: [id])
+  cart       Cart[]
+  order      Order[]
 }
 
-enum Category {
-  FOOD
-  DRINK
-  DESSERT
+// enum Category {
+//   FOOD
+//   DRINK
+//   DESSERT
+// }
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  posts Menu[]
 }
 
 model Order {
@@ -114,26 +130,22 @@ model Cart {
 }
 
 model Bill {
-  id        String     @id @default(cuid())
-  guestID   String     @map("guest_id")
-  tableID   String     @map("table_id")
+  id        Int     @id @default(autoincrement())
+  guest     Guest[]
+  tableID   String     
   total     Float
-  status    BillStatus @default(UNPAID)
-  guest     Guest      @relation(fields: [guestID], references: [id], onDelete: Cascade)
+  people    Int
+  status    BillStatus @default(PAID)
   table     Table      @relation(fields: [tableID], references: [id], onDelete: Cascade)
   createdAt DateTime   @default(now())
 }
 
 model Guest {
-  id    String   @id @default(cuid())
-  start DateTime
-  end   DateTime
-  bill  Bill[]
-}
-
-model quantity {
-  id       Int @id @default(autoincrement())
-  quantity Int @default(0)
+  id      String   @id @default(cuid())
+  start   DateTime
+  end     DateTime
+  bill    Bill     @relation(fields: [billID], references: [id], onDelete: Cascade)
+  billID  Int  
 }
 
 model ChefPage {
@@ -149,15 +161,9 @@ model ChefPage {
   
 }
 
-enum Status {
-  IDLE
-  EATTING
-  PAID
-}
-
-enum BillStatus {
-  PAID
-  UNPAID
+model quantity {
+  id       Int @id @default(autoincrement())
+  quantity Int @default(0)
 }
 
 enum Role {
@@ -166,3 +172,9 @@ enum Role {
   WAITER
   CASHIER
 }
+
+enum BillStatus {
+  PAID
+  UNPAID
+}
+

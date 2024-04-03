@@ -7,9 +7,9 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const categoryId = Number(params.id)
+    const categoryID = Number(params.id)
     const categoryWithPosts = await prisma.category.findUnique({
-      where: { id: categoryId },
+      where: { id: categoryID },
       include: {
         posts: true, // Include related posts in the response
       },

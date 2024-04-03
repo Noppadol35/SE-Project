@@ -38,7 +38,7 @@ const MyFormT = () => {
                 {
                     name: inputName,
                     capacity: inputCapacity,
-                    // role: inputStatus,
+                    
                 },
                 { abortEarly: false }
             );
@@ -68,9 +68,10 @@ const MyFormT = () => {
             try {
                 console.log("Submitting form");
                 
-                const res = await axios.post("/api/table", {
+                const res = await axios.post("/api/posts", {
                     name: inputName,
                     capacity: inputCapacity,
+                    statusID: 1,
                     
                 });
                 console.log("Response: ", res);

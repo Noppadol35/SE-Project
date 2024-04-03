@@ -28,8 +28,15 @@ export function Userhistory() {
     let [rows, setRows] = React.useState<Bill[]>([]);
 
     React.useEffect(() => {
-        axios.get("http://localhost:3000/api/history").then((res) => {
+        axios.get("http://localhost:3000/api/bill").then((res) => {
             setRows(res.data);
+            console.log(res.data);
+        });
+    }, []);
+    const [posts, setPosts] = React.useState([]);
+    React.useEffect(() => {
+        axios.get("http://localhost:3000/api/posts").then((res) => {
+            setPosts(res.data);
             console.log(res.data);
         });
     }, []);
@@ -41,10 +48,10 @@ export function Userhistory() {
                     <TableHead>
                         <TableRow>
                             <TableCell align="center" className="font-bold">
-                                Table
+                                Bill
                             </TableCell>
                             <TableCell align="center" className="font-bold">
-                                Guest
+                                Table
                             </TableCell>
                             <TableCell align="center" className="font-bold">
                                 Total Price
@@ -58,7 +65,7 @@ export function Userhistory() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map((row) => (
+                        {rows.map((row: any) => (
                             <TableRow
                                 key={row.id}
                                 sx={{
@@ -68,10 +75,10 @@ export function Userhistory() {
                                 }}
                             >
                                 <TableCell align="center">
-                                    {row.table?.id}
+                                    {row.id}
                                 </TableCell>
                                 <TableCell align="center">
-                                    {row.guest?.id}
+                                    {row.table.name}
                                 </TableCell>
                                 <TableCell align="center">
                                     {row.total}
@@ -80,7 +87,7 @@ export function Userhistory() {
                                     {row.status}
                                 </TableCell>
                                 <TableCell align="center">
-                                    {moment(row.date).format(
+                                    {moment(row.createdAt).format(
                                         "YYYY-MM-DD HH:mm:ss"
                                     )}
                                 </TableCell>

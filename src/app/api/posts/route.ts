@@ -57,7 +57,6 @@ export async function POST(request: Request) {
             }
         })
         return Response.json(newPost)
-
     }catch (error) {
         return new Response(error as BodyInit, { 
             status: 500,

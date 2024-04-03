@@ -21,7 +21,7 @@ export function UserTable() {
     let [rows, setRows] = React.useState<TableEntity[]>([]);
 
     React.useEffect(() => {
-        axios.get("http://localhost:3000/api/table").then((res) => {
+        axios.get("http://localhost:3000/api/posts").then((res) => {
             setRows(res.data);
         });
         console.log(rows);
@@ -36,10 +36,18 @@ export function UserTable() {
     const handleClose = () => {
         setOpen(false);
     };
-
+    const [statuss, setStatuss] = React.useState([]);
+    React.useEffect(() => {
+        axios.get(`http://localhost:3000/api/statuss/`).then((res) => {
+            setStatuss(res.data);
+            
+        });
+        console.log(statuss);
+    }, []);
+    
     React.useEffect(() => {
         const interval = setInterval(() => {
-            axios.get("http://localhost:3000/api/table").then((res) => {
+            axios.get("http://localhost:3000/api/posts").then((res) => {
                 setRows(res.data);
                 console.log("Data updated");
             });
@@ -71,7 +79,7 @@ export function UserTable() {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map((row) => (
+                        {rows.map((row: any) => (
                             <TableRow
                                 key={row.id}
                                 sx={{
@@ -82,7 +90,7 @@ export function UserTable() {
                             >
                                 <TableCell align="center">{row.name}</TableCell>
                                 <TableCell align="center">
-                                    {row.status}
+                                    {row.status.name}
                                 </TableCell>
                                 <TableCell align="center">
                                     {row.capacity}

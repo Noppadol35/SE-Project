@@ -6,7 +6,7 @@ import Modal from "@mui/material/Modal";
 import EditIcon from "@mui/icons-material/Edit";
 
 import * as yup from "yup";
-import { MenuItem, Select, TextField } from "@mui/material";
+import { FormControlLabel, MenuItem, Select, TextField } from "@mui/material";
 import axios from "axios";
 
 const style = {
@@ -31,15 +31,8 @@ interface EditTableProps {
 }
 
 export default function EditTable(props: EditTableProps) {
-    const { userTable } = props;
-    let [inputName, setInputName] = useState("");
-    let [inputCapacity, setInputCapacity] = useState(0);
-    let [inputStatus, setInputStatus] = useState("IDLE");
-    React.useEffect(() => {
-        setInputName(userTable.name);
-        setInputCapacity(userTable.capacity);
-        setInputStatus(userTable.status);
-    }, [userTable]);
+
+
 
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
@@ -63,17 +56,43 @@ export default function EditTable(props: EditTableProps) {
     let [textErrorName, setTextErrorName] = useState("");
     let [textErrorCapacity, setTextErrorCapacity] = useState("");
 
+    const [statusID, setStatus] = React.useState("");
+    const [statuss, setStatuss] = React.useState([]);
+    const [name, setName] = React.useState('');
+    const [capacity, setCapacity] = React.useState("");
+
+    const [posts, setPosts] = React.useState([]);
+
+
+    React.useEffect(() => {
+        axios.get(`http://localhost:3000/api/posts/${props.userTable.id}`).then((res) => {
+            setName(res.data.name || "");
+            setCapacity(res.data.capacity);
+            setStatus(res.data.statusID || "");
+        });
+        console.log(statuss);
+    }, [props.userTable.id]);
+
+    React.useEffect(() => {
+        axios.get(`http://localhost:3000/api/statuss/`).then((res) => {
+            setStatuss(res.data);
+
+        });
+        console.log(statuss);
+    }, []);
+
     const handleSubmit = async (event: any) => {
         event.preventDefault();
         try {
             await schema.validate(
                 {
-                    name: inputName,
-                    capacity: inputCapacity,
-                    status: inputStatus,
+                    name: name,
+                    capacity: capacity,
+                    statusID,
                 },
                 { abortEarly: false }
             );
+            
         } catch (error: any) {
             error.inner.forEach((e: any) => {
                 if (e.path === "name") {
@@ -88,19 +107,20 @@ export default function EditTable(props: EditTableProps) {
         }
 
         console.log("Pass validation");
-        console.log("Name: ", inputName);
-        console.log("Capacity: ", inputCapacity);
-        console.log("Status: ", inputStatus);
+        console.log("Name: ", name);
+        console.log("Capacity: ", capacity);
+        console.log("Status: ", statusID);
 
-        try{
-            const res = await axios.put(`/api/table/${userTable.id}`, {
-                name: inputName,
-                capacity: inputCapacity,
-                status: inputStatus,
+        try {
+            const res = await axios.put(`/api/posts/${props.userTable.id}`, {
+                name: name,
+                capacity: Number(capacity) as number,
+                statusID,
             });
             console.log(res);
-        } catch (error){
-            console.log( " Error While sumitting form :", error);
+            handleClose();
+        } catch (error) {
+            console.log(" Error While sumitting form :", error);
         }
     };
 
@@ -112,6 +132,7 @@ export default function EditTable(props: EditTableProps) {
             >
                 <EditIcon />
             </Button>
+
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -130,33 +151,40 @@ export default function EditTable(props: EditTableProps) {
 
                     <form onSubmit={handleSubmit}>
                         <TextField
-                            label="Name*"
-                            value={inputName}
-                            onChange={(e) => setInputName(e.target.value)}
+                            label="Name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
                             error={errorName}
                             helperText={textErrorName}
                             sx={{ width: "300px", marginBottom: "10px" }}
                         />
                         <TextField
-                            label="Capacity*"
+                            id="Capacity"
+                            label="PEOPLE"
                             type="number"
-                            value={inputCapacity}
-                            onChange={(e) =>
-                                setInputCapacity(parseInt(e.target.value))
-                            }
+                            value={capacity}
+                            onChange={(e) => setCapacity(e.target.value)}
+
                             error={errorCapacity}
                             helperText={textErrorCapacity}
                             sx={{ width: "300px", marginBottom: "10px" }}
                         />
                         <Select
-                            value={inputStatus}
-                            label="Status*"
-                            onChange={(e) => setInputStatus(e.target.value)}
+                            id="status"
+                            value={statusID}
+                            onChange={(e) => setStatus(e.target.value)}
                         >
-                            <MenuItem value={"IDLE"} selected>IDLE</MenuItem>
-                            <MenuItem value={"EATTING"}>EATTING</MenuItem>
-                            <MenuItem value={"PAID"}>PAID</MenuItem>
+                            {statuss.map((sta: any) => (
+                                <MenuItem key={sta.id}
+                                    value={sta.id} >
+
+                                    {sta.name}
+                                </MenuItem>
+
+                            ))}
                         </Select>
+
+
                         <br />
                         <br />
                         <Button type="submit" variant="outlined">
@@ -165,6 +193,11 @@ export default function EditTable(props: EditTableProps) {
                     </form>
                 </Box>
             </Modal>
+
         </div>
+
     );
+
+
 }
+

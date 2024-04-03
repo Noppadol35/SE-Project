@@ -51,7 +51,7 @@ const Receipt = ({ params }: { params: { id: string } }) => {
   const router = useRouter(); 
   const [name, setname] = useState('');
   const [capacity, setCapacity] = useState('');
-  const [statusId, setStatusId] = useState('');
+  const [statusID, setStatusId] = useState('');
   const [statuss, setStatuss] = useState([]);
   const [posts, setPosts] = useState([]);
   const qrCodeURL = `http://localhost:3000/menu/${id}`;
@@ -86,7 +86,7 @@ const Receipt = ({ params }: { params: { id: string } }) => {
       
       setname(res.data.name || '')
       setCapacity(res.data.capacity)
-      setStatusId(res.data.statusId || '')
+      setStatusId(res.data.statusID || '')
 
     } catch (error) {
       console.error(error)

@@ -69,7 +69,8 @@ export default function DeleteUser(props: DeleteUserProps) {
                         🗑️ Delete ?
                     </h2>
                     <p id="parent-modal-description" className=" m-3 ">
-                        {`👉🏻 Are you sure you want to delete this ${userData} ?`}
+                        👉🏻 Are you sure you want to delete this {userData.name}{" "}
+                        ?
                     </p>
                     <div>
                         <Button

@@ -26,6 +26,7 @@ export default function HeaderTabs() {
     console.log(session?.user?.name);
 
     return (
+        
         <div className={classes.header}>
             <Container className={classes.mainSection} size="md">
                 <Group justify="space-between">

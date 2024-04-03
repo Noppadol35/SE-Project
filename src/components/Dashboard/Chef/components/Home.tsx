@@ -1,154 +1,77 @@
+// Import useState and useEffect from React
 import React, { useState, useEffect } from "react";
 import OrderHistoryPage from "./OrderHistoryPage";
 import { Modal, Button } from "@mantine/core";
+import axios from 'axios';
+import Navbar from "@/components/Dashboard/Chef/components/Navbar";
+import { Order } from "@/types/entity";
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import TableRestaurantIcon from '@mui/icons-material/TableRestaurant';
 
-function Home() {
-  const [orders, setOrders] = useState([
-    {
-      id: 1,
-      tableID: [
-        {
-          name: "Table 1",
-          seat: 4,
-          zoneId: { name: "Zone A" },
-        },
-      ],
-      menu: [
-        {
-          id: 1,
-          priceList: {
-            food: { name: "Pad Thai" },
-            name: "Main Course",
-          },
-          qty: 2,
-          optionDetail: [{ name: "No chili" }, { name: "Extra Tofu" }],
-          status: "เสร็จสิ้น", // เพิ่มสถานะให้กับเมนู
-        },
-        {
-          id: 2,
-          priceList: {
-            food: { name: "Tom Yum Soup" },
-            name: "Appetizer",
-          },
-          qty: 1,
-          optionDetail: [],
-          status: "เสร็จสิ้น", // เพิ่มสถานะให้กับเมนู
-        },
-      ],
-    },
-    {
-      id: 2,
-      tableID: [
-        {
-          name: "Table 2",
-          seat: 6,
-          zoneId: { name: "Zone B" },
-        },
-      ],
-      menu: [
-        {
-          id: 3,
-          priceList: {
-            food: { name: "Green Curry" },
-            name: "Main Course",
-          },
-          qty: 3,
-          optionDetail: [{ name: "Spicy level: Medium" }],
-          status: "เสร็จสิ้น",
-        },
-      ],
-    },
-    {
-      id: 3,
-      tableID: [
-        {
-          name: "Table 3",
-          seat: 2,
-          zoneId: { name: "Zone C" },
-        },
-      ],
-      menu: [
-        {
-          id: 4,
-          priceList: {
-            food: { name: "Som Tum" },
-            name: "Appetizer",
-          },
-          qty: 2,
-          optionDetail: [{ name: "Extra Spicy" }],
-          status: "เสร็จสิ้น",
-        },
-        {
-          id: 5,
-          priceList: {
-            food: { name: "Pad Kra Pao" },
-            name: "Main Course",
-          },
-          qty: 1,
-          optionDetail: [{ name: "With Fried Egg" }],
-          status: "เสร็จสิ้น",
-        },
-      ],
-    },
-    {
-      id: 4,
-      tableID: [
-        {
-          name: "Table 4",
-          seat: 8,
-          zoneId: { name: "Zone D" },
-        },
-      ],
-      menu: [
-        {
-          id: 6,
-          priceList: {
-            food: { name: "Massaman Curry" },
-            name: "Main Course",
-          },
-          qty: 2,
-          optionDetail: [{ name: "Mild" }],
-          status: "เสร็จสิ้น",
-        },
-      ],
-    },
-    {
-      id: 5,
-      tableID: [
-        {
-          name: "Table 5",
-          seat: 4,
-          zoneId: { name: "Zone E" },
-        },
-      ],
-      menu: [
-        {
-          id: 7,
-          priceList: {
-            food: { name: "Spring Rolls" },
-            name: "Appetizer",
-          },
-          qty: 2,
-          optionDetail: [],
-          status: "เสร็จสิ้น",
-        },
-        {
-          id: 8,
-          priceList: {
-            food: { name: "Pineapple Fried Rice" },
-            name: "Main Course",
-          },
-          qty: 1,
-          optionDetail: [{ name: "No Shrimp" }],
-          status: "เสร็จสิ้น",
-        },
-      ],
-    },
-  ]);
+import CssBaseline from '@mui/material/CssBaseline';
 
+function groupByTableAndTime(orders: Order[]) {
+  const groupedOrders: { [key: string]: Order[] } = {};
+
+  orders.forEach((order) => {
+    const { tableID, createdAt } = order;
+    const key = `${tableID}_${new Date(createdAt).getHours()}_${new Date(createdAt).getMinutes()}`;
+
+    if (!groupedOrders[key]) {
+      groupedOrders[key] = [];
+    }
+
+    groupedOrders[key].push(order);
+  });
+
+  return groupedOrders;
+}
+
+export default function ChefOrderPage() {
+  const [order, setOrders] = useState([]);
   const [selectedZone, setSelectedZone] = useState<string>("");
-
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [quantities, setQuantities] = useState([])
+  const [menu, setMenu] = useState([]);
+  const [table, setTable] = useState<any[]>([]);
+  const router = useRouter();
+
+  const fetchPosts = async () => {
+    try {
+      const res = await axios.get(`/api/posts`)
+      setTable(res.data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const fetchOrders = async () => {
+    try {
+      const res = await axios.get("http://localhost:3000/api/order");
+      setOrders(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const fetchMenu = async () => {
+    try {
+      const res = await axios.get("http://localhost:3000/api/menu");
+      setMenu(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    fetchMenu();
+    fetchPosts();
+    fetchOrders();
+  }, []);
 
   const handleViewOrderHistory = () => {
     setIsModalOpen(true);
@@ -158,91 +81,74 @@ function Home() {
     setIsModalOpen(false);
   };
 
+  const pendingOrders = (tableId: string) => {
+    return order.filter((ord: any) => ord.tableID === tableId && ord.status === 'pending..');
+  }
+
+  const groupedOrders = groupByTableAndTime(order);
+
+  const handleServeOrder = async (orderId: string) => {
+    try {
+      // Update order status to "served"
+      await axios.put(`http://localhost:3000/api/order/${orderId}`, { status: 'served' });
+
+      // Update cart status to "served"
+      const cartId = (order.find((ord: any) => ord.id === orderId) as any)?.cartID;
+      if (cartId) {
+        await axios.put(`http://localhost:3000/api/cart/${cartId}`, { status: 'served' });
+      }
+
+      // Refetch orders
+      fetchOrders();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
-      <div className="flex justify-center items-center">
-        <div className="w-full md:w-[calc(50%-16px)] p-2 md:h-[90dvh] rounded-xl flex flex-col justify-center items-center">
-          <div
-            className="flex items-center text-2xl p-3"
-            style={{ marginBottom: "1rem" }}
-          >
+      <Navbar />
+      <div className="flex justify-center items-center flex-col ">
+        <div className="w-full md:w-25px p-9 md:h-[90dvh] rounded-xl flex flex-col justify-center items-center">
+          <div className="flex items-center text-2xl p-3" >
             <p style={{ marginRight: "20rem" }}>Food Order - Bill</p>
-            <div>
-            <Button onClick={handleViewOrderHistory} color="gray" className=" rounded-xl hover:shadow-xl">Order History</Button>
-              <Modal
-                title="Order History"
-                opened={isModalOpen}
-                onClose={handleCloseModal}
-              >
-                <OrderHistoryPage orders={orders} />
-              </Modal>
-            </div>
           </div>
 
-          <div className="flex flex-wrap justify-center gap-4 py-6 overflow-y-scroll w-full">
-            {orders ? (
-              orders
-                .filter(
-                  (data) =>
-                    selectedZone === "" ||
-                    (Array.isArray(data.tableID) &&
-                      data.tableID.some((v) => v.name === selectedZone))
-                )
-                .map((data) => (
-                  <div
-                    key={data.id}
-                    className="w-full shadow-xl p-5 mb-6 bg-white rounded-xl card "
-                  >
-                    <div className="card-body">
-                      <h2 className="text-xl">
-                        {Array.isArray(data.tableID) &&
-                          data.tableID.map((v) => (
-                            <React.Fragment key={v.name}>
-                              <p>
-                                {v.name} - {v.seat} Seats, {v.zoneId.name}
-                              </p>
-                              <p className="text-xs flex gap-1 justify-end ml-9">
-                                8:00 PM
-                              </p>
-                            </React.Fragment>
-                          ))}
-                      </h2>
-
-                      {Array.isArray(data.menu) &&
-                        data.menu.map((v) => (
-                          <React.Fragment key={v.id}>
-                            <div className="flex gap-3">
-                              <input type="checkbox" />
-                              {v.priceList != null && v.priceList.food.name}
-                              <p className="justify-end flex">x {v.qty}</p>
-                              <div className="ml-3 text-[#ED7E46]">
-                                preparing food
-                              </div>
-                            </div>
-                            <div className="text-sm text-[#D9D9D9] flex gap-3">
-                              {v.optionDetail.map((i) => (
-                                <div key={i.name?.toString()}>{i.name}</div>
-                              ))}
-                              {v.priceList != null && v.priceList.name}
-                            </div>
-                          </React.Fragment>
-                        ))}
-                    </div>
-                    <div className="flex gap-6 justify-end p-6">
-                      <button className="rounded-xl bg-[#436850] text-[#FBFADA] w-28 h-10 text-sm border-none focus:outline-none focus:ring-2 focus:ring-[#ED7E46] focus:ring-opacity-50 transition duration-300 ease-in-out hover:shadow-xl">
-                        Success
-                      </button>
-                    </div>
-                  </div>
-                ))
-            ) : (
-              <div>ไม่พบข้อมูล</div>
-            )}
+          <div className="flex flex-wrap justify-center gap-5 py-7 overflow-y-scroll w-full ">
+            <Grid container spacing={1} gap={5} padding={2}>
+              {Object.keys(groupedOrders).map((key) => (
+                <React.Fragment key={key}>
+                  {pendingOrders(groupedOrders[key][0].tableID).length > 0 && (
+                    <Button
+                      className="card-body gap-6 justify-end p-6"
+                      variant="contained"
+                      onClick={() => handleServeOrder(groupedOrders[key][0].id)}
+                    >
+                      <Typography variant="h6" fontSize={20} className="card-body gap-6 justify-end p-6">
+                        {table.find(t => t.id === (groupedOrders[key][0].tableID || ''))?.name}
+                      </Typography>
+                      {groupedOrders[key].map((ord) => (
+                        <Grid key={ord.id} item xs={4} sm={4} md={4} textAlign="center">
+                          <Box
+                            display="inline-flex"
+                            flexDirection="column"
+                            alignItems="center"
+                            justifyContent="center"
+                          >
+                            <Typography fontSize={16}>
+                              {ord.quantity}x {ord.menu.name} - {new Date(ord.createdAt).toLocaleTimeString()}
+                            </Typography>
+                          </Box>
+                        </Grid>
+                      ))}
+                    </Button>
+                  )}
+                </React.Fragment>
+              ))}
+            </Grid>
           </div>
         </div>
       </div>
     </>
   );
 }
-
-export default Home;

@@ -31,14 +31,7 @@ interface EditMenuProps {
 
 export default function EditMenu(props: EditMenuProps) {
     const { menuData } = props;
-    let [inputName, setInputName] = useState("");
-    let [inputPrice, setInputPrice] = useState(0);
-    let [inputCategory, setInputCategory] = useState("FOOD");
-
-    React.useEffect(() => {
-        setInputName(menuData.name);
-        setInputCategory(menuData.category);
-    }, [menuData]);
+    
 
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
@@ -62,14 +55,37 @@ export default function EditMenu(props: EditMenuProps) {
     let [textErrorName, setTextErrorName] = useState("");
     let [textErrorPrice, setTextErrorPrice] = useState("");
 
+    const [categoryID, setCategoryID] = React.useState("");
+    const [categories, setCategories] = React.useState([]);
+    const [name, setName] = React.useState('');
+    const [price, setPrice] = React.useState('');
+
+    const [posts, setPosts] = React.useState([]);
+
+
+    React.useEffect(() => {
+        axios.get(`http://localhost:3000/api/menu/${props.menuData.id}`).then((res) => {
+            setName(res.data.name || "");
+            setPrice(res.data.price || "")
+            setCategoryID(res.data.categoryID || "");
+        });
+        console.log(name);
+    }, [props.menuData.id]);
+
+    React.useEffect(() => {
+        axios.get(`http://localhost:3000/api/categories/`).then((res) => {
+            setCategories(res.data);
+
+        });
+        console.log(setCategories);
+    }, []);
     const handleSubmit = async (event: any) => {
         event.preventDefault();
         try {
             await schema.validate(
                 {
-                    name: inputName,
-                    price: inputPrice,
-                    category: inputCategory,
+                    name: name,
+                    categoryID,
                 },
                 { abortEarly: false }
             );
@@ -87,17 +103,18 @@ export default function EditMenu(props: EditMenuProps) {
         }
 
         console.log("Pass validation");
-        console.log("Name: ", inputName);
-        console.log("Price: ", inputPrice);
-        console.log("Category: ", inputCategory);
+        console.log("Name: ", name);
+        console.log("Price: ", price);
+        console.log("Category: ", categoryID);
 
         try {
-            const res = await axios.put(`/api/menus/${menuData.id}`, {
-                name: inputName,
-                price: inputPrice,
-                category: inputCategory,
+            const res = await axios.put(`/api/menu/${menuData.id}`, {
+                name: name,
+                price: price,
+                categoryID,
             });
             console.log(res.data);
+            handleClose();
         } catch (error) {
             console.error(error);
         }
@@ -130,20 +147,25 @@ export default function EditMenu(props: EditMenuProps) {
                     <form onSubmit={handleSubmit}>
                         <TextField
                             label="Name*"
-                            value={inputName}
-                            onChange={(e) => setInputName(e.target.value)}
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
                             error={errorName}
                             helperText={textErrorName}
                             sx={{ width: "300px", marginBottom: "10px" }}
                         />
                         <Select
-                            value={inputCategory}
-                            label="Category*"
-                            onChange={(e) => setInputCategory(e.target.value)}
+                            id="category"
+                            value={categoryID}
+                            onChange={(e) => setCategoryID(e.target.value)}
                         >
-                            <MenuItem value={"FOOD"}>FOOD</MenuItem>
-                            <MenuItem value={"DRINK"}>DRINK</MenuItem>
-                            <MenuItem value={"DESSERT"}>DESSERT</MenuItem>
+                            {categories.map((cat: any) => (
+                                <MenuItem key={cat.id}
+                                    value={cat.id} >
+
+                                    {cat.name}
+                                </MenuItem>
+
+                            ))}
                         </Select>
                         <br />
                         <br />

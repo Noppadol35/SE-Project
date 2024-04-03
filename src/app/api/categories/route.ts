@@ -16,12 +16,12 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const { name } = await req.json()
-    const newcategories = await prisma.category.create({
+    const newCategory = await prisma.category.create({
       data: {
         name
       },
     })
-    return Response.json(newcategories)
+    return Response.json(newCategory)
   } catch (error) {
     return new Response(error as BodyInit, {
       status: 500,

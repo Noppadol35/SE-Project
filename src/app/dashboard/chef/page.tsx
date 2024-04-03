@@ -1,4 +1,4 @@
-import { ChefOrder } from "@/components/Dashboard/Chef/chefOrder";
+import  {ChefOrder}  from "@/components/Dashboard/Chef/chefOrder";
 
 export const metadata = {
   title: "Chef",
@@ -7,7 +7,7 @@ export const metadata = {
 export default function Chef() {
   return (
     <div>
-      <ChefOrder />
+      <ChefOrder  />
     </div>
   );
 }

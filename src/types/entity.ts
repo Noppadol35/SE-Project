@@ -4,7 +4,7 @@ export type User = {
     email: string;
     name: string;
     phone: string;
-    role: "MANAGER" | "WAITER" | "CHEF" | "CASHIER";
+    role: string;
 }
 
 export type Order = {
@@ -12,21 +12,28 @@ export type Order = {
     quantity: number;
     tableID: string;
     menu : Menu;
-    status: "PENDING" | "COMPLETED" | "CANCELLED";
+    status: string;
+    createdAt: Date;
+    cartID: number;
+    menuID: number;
+
 }
 
 export type Menu = {
-    id: number;
+    id: string;
     name: string;
+    price: number;
+    image: string;
     category: string;
     cart: Cart;
+    status: string;
 }
 
 export type TableEntity = {
     id: string;
     name: string;
     capacity: number;
-    status: "IDLE" | "EATTING";
+    StatusEnum: string;
     order: Order;
     cart: Cart;
     bill: Bill;
@@ -44,17 +51,17 @@ export type Cart = {
 export type Bill = {
     id: string;
     total: number;
-    status: "PAID" | "UNPAID";
     table: TableEntity;
     guest: Guest;
-    date: string
+    status: string;
 }
 
 export type Guest = {
     id: string;
-    start: string;
-    end: string;
+    start: Date;
+    end: Date;
     bill: Bill;
+    status: string;
 }
 
 export type session = {
@@ -71,4 +78,11 @@ export type session = {
 export type SignInResponse = {
     user: User;
     session: session;
+}
+
+export type table = {
+    id: string;
+    name: string;
+    capacity: number;
+    status: string;
 }

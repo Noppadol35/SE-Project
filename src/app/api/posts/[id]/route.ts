@@ -14,7 +14,7 @@ export async function GET(
     include: {
       status: true,
     }
-  })
+  })  
 
   return Response.json(post)
 }
@@ -25,15 +25,15 @@ export async function PUT(
   { params }: { params: { id: string } },
 ) {
   try {
-    const { capacity,statusId } = await req.json()
+    const { name, capacity,statusID } = await req.json()
     const postId = String(params.id)
     const updatePost = await prisma.table.update({
 
       where: { id: postId },
       data: {
-
+        name: name,
         capacity:Number(capacity),
-        statusId:Number(statusId),
+        statusID:Number(statusID),
 
     }
     })

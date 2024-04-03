@@ -18,8 +18,8 @@ import {
   IconButton,
   TableFooter,
 } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 
-import { makeStyles } from '@mui/styles';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -29,32 +29,16 @@ import TextField from '@mui/material/TextField';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import DeleteIcon from '@mui/icons-material/Delete';
+import RemoveIcon from '@mui/icons-material/Remove';
 
 
-const useStyles = makeStyles({
-  tableContainer: {},
-  tableCell: {
-    padding: '10px',
-    borderBottom: '1px solid #dddddd',
-  },
-  tableHeadCell: {
-    backgroundColor: '#f2f2f2',
-    fontWeight: 'bold',
-    borderBottom: '1px solid #dddddd',
-  },
-  tableFootCell: {
-    backgroundColor: '#f2f2f2',
-    fontWeight: 'bold',
-    borderBottom: '1px solid #dddddd',
-  },
-});
+
 
 
 const StickyHeadTable = ({ params }: { params: { id: string } }) => {
   const { id } = params;
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(100); // Set default rows per page
-
+  // Set default rows per page
   const [cart, setCart] = useState<any[]>([]);
   const [menu, setMenu] = useState([]);
   const [name, setname] = useState("");
@@ -63,11 +47,14 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
   const [quantities, setQuantities] = useState([])
   const [search, setSearch] = useState('')
   const router = useRouter();
-  const classes = useStyles();
+
   const [totals, setTotals] = useState<{ [key: string]: number }>({});
   const [open, setOpen] = React.useState(false);
-  
-  
+  const [orderSent, setOrderSent] = useState(false);
+  const [alert, setAlert] = useState('');
+
+  const [status, setStatus] = useState("");
+
 
 
 
@@ -76,7 +63,7 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
       const res = await axios.get(`http://localhost:3000/api/posts/${id}`);
 
       setname(res.data.name || "");
-      
+
     } catch (error) {
       console.error(error);
     }
@@ -84,10 +71,10 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
 
   const fetchMenu = async () => {
     try {
-      const query = new URLSearchParams({search, category}).toString()
+      const query = new URLSearchParams({ search, category }).toString()
       const response = await axios.get(`http://localhost:3000/api/menu?${query}`)
       setMenu(response.data);
-      
+
     } catch (error) {
       console.error(error);
     }
@@ -109,7 +96,7 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
       console.error(error);
     }
   }
-  
+
   useEffect(() => {
     fetchPostsTable(id);
     fetchCart();
@@ -120,7 +107,7 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
   useEffect(() => {
     const totalsMap: { [key: string]: number } = {};
     cart.forEach((item: any) => {
-      if (item.status !== 'pending..') {
+      if (item.status !== 'pending..' && item.status !== 'served') {
         const menuName = item.menu.name;
         totalsMap[menuName] = (totalsMap[menuName] || 0) + item.quantity;
       }
@@ -132,7 +119,7 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
   const deletePost = async (id: Number) => {
     try {
       await axios.delete(`/api/Cart/${id}`)
-      
+
       fetchCart();
       fetchMenu();
       fetchCategories();
@@ -141,13 +128,87 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
     }
   }
 
+  const handleClick = async () => {
+    try {
+      if (!orderSent && cart.length > 0) {
+        // Set orderSent to true to prevent multiple orders
+        setOrderSent(true);
+
+        // Filter cart items to get only those with status 'waiting to send..'
+        const itemsToOrder = cart.filter(item => item.status === 'waiting to send..');
+
+        // Check if there are items to be ordered
+        if (itemsToOrder.length > 0) {
+          // Update the status of items in the cart to "pending.."
+          await Promise.all(
+            itemsToOrder.map(async (itemincart: any) => {
+              await axios.put(`/api/Cart/${itemincart.id}`, { status: 'pending..' });
+            })
+          );
+
+          // Create new order data from items in the cart with status 'pending..'
+          const orderData = itemsToOrder.map(item => ({
+            menuID: item.menu.id,
+            menu: item.menu.name,
+            quantity: item.quantity,
+            tableID: id,
+            cartID: item.id,
+          }));
+
+          // Send order data to the API
+          const response = await axios.post('/api/order', orderData);
+
+          if (response.status === 201) {
+            // If order creation is successful, show success message
+            setOpen(true);
+
+            // Refresh cart data
+            fetchCart();
+          } else {
+            console.log("Failed to create order.");
+          }
+        } else {
+          console.log("No menu items in 'waiting to send..' status.");
+        }
+      }
+    } catch (error) {
+      console.error("Error creating order", error);
+    }
+  };
+
+  {/* ///////// ADD BUTTONS ////////// */ }
+  const handleIncrement = async (key: any, ids: any) => {
+    try {
+      const [status, menuName] = key.split("-");
+      const menuItem = cart.find(
+        (item) => item.status === status && item.menu.name === menuName
+      );
+
+      if (menuItem) {
+        const newQuantity = menuItem.quantity + 1;
+        if (newQuantity <= 20) {
+          // ถ้าจำนวนใหม่ไม่เกิน 20 จึงอัปเดตจำนวนในตะกร้า
+          await axios.put(`/api/Cart/${menuItem.id}`, {
+            quantity: newQuantity,
+          });
+          fetchCart(); // รีเฟรชข้อมูลในตะกร้า
+        } else {
+          // ถ้าจำนวนใหม่เกิน 20 จะแสดงข้อความแจ้งเตือน
+          setAlert('Cannot add more than 20 items.');
+        }
+      }
+    } catch (error) {
+      console.error("Failed to update cart item", error);
+    }
+  };
+  {/* ///////// DEL BUTTONS ////////// */ }
   const handleDelete = async (key: any, ids: any) => {
     try {
       const [status, menuName] = key.split("-");
       const menuItem = cart.find(
         (item) => item.status === status && item.menu.name === menuName
       );
-  
+
       if (menuItem) {
         if (menuItem.quantity === 1) {
           // ถ้าจำนวนเท่ากับ 1 ให้ลบรายการนั้นออกจากตะกร้า
@@ -159,55 +220,10 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
           });
         }
       }
-  
+
       fetchCart();
     } catch (error) {
       console.error("Failed to delete or update cart item", error);
-    }
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
-
-
-  const handleClick = async () => {
-    try {
-      // อัปเดตสถานะของรายการในตะกร้าเป็น "pending"
-      await Promise.all(
-        cart.map(async (itemincart: any) => {
-          await axios.put(`/api/Cart/${itemincart.id}`, { status: 'pending..' });
-        })
-      );
-  
-      // สร้างข้อมูลคำสั่งใหม่จากรายการในตะกร้า
-      const orderData = Object.entries(totals).flatMap(([menuName, total]) =>
-        cart
-          .filter(item => item.menu.name === menuName && item.status !== 'pending..')
-          .map(item => ({
-            menuID: item.menu.id,
-            menu: item.menu.name,
-            quantity: total,
-            tableID: id,
-            cartID: item.id,
-          }))
-      );
-  
-      // ส่งข้อมูลคำสั่งไปยัง API
-      const response = await axios.post('/api/order', orderData);
-  
-      if (response.status === 201) {
-        // ถ้าสร้างคำสั่งสำเร็จ
-        setOpen(true);
-  
-        // รีเฟรชข้อมูลในตะกร้า
-        fetchCart();
-      } else {
-        console.error('Failed to create order');
-      }
-    } catch (error) {
-      console.error('Error creating order', error);
     }
   };
 
@@ -220,7 +236,7 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
   };
 
   return (
-    <><div className={classes.tableContainer}>
+    <><div >
       <Grid container justifyContent="center">
         <Grid item xs={12} md={8}>
 
@@ -231,13 +247,13 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
 
               <TableHead>
                 <TableRow >
-                      <TableCell className={classes.tableHeadCell} align="center" colSpan={3}>YOUR ORDER</TableCell>        
+                  <TableCell align="center" colSpan={5}>YOUR ORDER</TableCell>
                 </TableRow>
                 <TableRow>
-                  <TableCell className={classes.tableHeadCell} align="center">QUANTITY</TableCell>
-                  <TableCell className={classes.tableHeadCell} align="center">NAME</TableCell>
-                  <TableCell className={classes.tableHeadCell} align="center">DELETE</TableCell>
-                  <TableCell className={classes.tableHeadCell} align="center">STATUS</TableCell>
+                  <TableCell align="center">QUANTITY</TableCell>
+                  <TableCell align="center">NAME</TableCell>
+                  <TableCell align="center" colSpan={2}>ADD/DEL</TableCell>
+                  <TableCell align="center">STATUS</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -252,93 +268,112 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
                   }, {})
                 ).map(([key, { status, menuName, quantity, ids }]: any) => (
                   <TableRow key={key}>
-                    <TableCell className={classes.tableCell} align="center">
+                    <TableCell align="center">
                       <Typography variant="body1">{quantity}</Typography>
                     </TableCell>
-                    <TableCell className={classes.tableCell} align="center">
+                    <TableCell align="center">
                       <Typography variant="body1">{menuName}</Typography>
                     </TableCell>
-                    <TableCell className={classes.tableCell} align="center">
+
+                    {/* ///////// ADD BUTTONS ////////// */}
+                    <TableCell align="center">
                       <Button
-                        disabled={status === "pending.."}
-                        sx={{
-                          background: "#8c2b0a",
-                          border: "1px solid #ADBC9F",
-                          p: 1,
-                          "&:hover": {
-                            bgcolor: "#66220b",
-                          },
-                        }}
+                        disabled={status === "pending.." || status === "served"}
+                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full"
                         variant="contained"
-                        startIcon={<DeleteIcon />}
+                        startIcon={<AddIcon />}
+                        onClick={() => handleIncrement(key, ids)}
+                      >
+                        Increase
+                      </Button>
+                    </TableCell>
+
+
+                    {/* ///////// DEL BUTTONS ////////// */}
+                    <TableCell align="center">
+                      <Button
+                        disabled={status === "pending.." || status === "served"}
+                        className="bg-red-500 hover:bg-red-900 text-white font-bold py-2 px-4 rounded-full"
+                        variant="contained"
+                        startIcon={quantity > 1 ? <RemoveIcon /> : <DeleteIcon />}
                         onClick={() => handleDelete(key, ids)}
                       >
                         {quantity > 1 ? "Decrease" : "Delete"}
                       </Button>
                     </TableCell>
-                    <TableCell className={classes.tableCell} align="center">
+                    <TableCell align="center">
                       <Typography variant="body1">{status}</Typography>
                     </TableCell>
                   </TableRow>
-                ))} 
+                ))}
+
               </TableBody>
-                
+
               <TableFooter>
-                
-                  <TableRow >
-                      <TableCell className={classes.tableFootCell} align="center" colSpan={4}>DETAIL</TableCell>        
-                  </TableRow>
-                  <TableRow>
-                      <TableCell className={classes.tableHeadCell} align="center" colSpan={2}>NAME</TableCell>
-                      <TableCell className={classes.tableHeadCell} align="center" colSpan={2}>QTY.</TableCell>     
-                  </TableRow>
-                
-                  
-                    {Object.entries(totals).map(([menuName, total]) => (
-                      <TableRow key={menuName}>
-                        <TableCell className={classes.tableCell} align="center"  colSpan={2}>
-                          <Typography variant="body1" >{menuName}</Typography>
-                        </TableCell>
-                        <TableCell className={classes.tableCell} align="center" colSpan={2}>
-                          <Typography variant="body1">{total}</Typography>
-                        </TableCell>     
-                      </TableRow>
-                    ))}
 
-                 <TableRow>
-                  <TableCell className={classes.tableFootCell} align="center" colSpan={4}>
-                        <Button sx={{
-                          background: "#a7d180",
-                          border: "1px solid #ADBC9F",
-                          p: 3,
-                          "&:hover": {
-                            bgcolor: "#7e946a",
-                        }}}
-                          variant="contained"
-                          onClick={handleClick} >
+                <TableRow >
+                  <TableCell align="center" colSpan={5}>DETAIL</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell align="center" colSpan={3}>NAME</TableCell>
+                  <TableCell align="center" colSpan={2}>QTY.</TableCell>
+                </TableRow>
 
-                          SEND ORDER</Button>
-                            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}
-                            >
-                            <Alert
-                              onClose={handleClose}
-                              severity="success"
-                              variant="filled"
-                              sx={{ width: '100%' }}
-                            >
-                                Your order is complete. Please wait to receive your food.
-                        </Alert>
-                      </Snackbar>
+
+                {Object.entries(totals).map(([menuName, total]) => (
+                  <TableRow key={menuName}>
+                    <TableCell align="center" colSpan={3}>
+                      <Typography variant="body1" >{menuName}</Typography>
+                    </TableCell>
+                    <TableCell align="center" colSpan={2}>
+                      <Typography variant="body1">{total}</Typography>
                     </TableCell>
                   </TableRow>
-                </TableFooter>
-              </Table>
-            </TableContainer>
-          </Grid>
+                ))}
+
+                <TableRow>
+                  <TableCell align="center" colSpan={5}>
+                    {cart.some(item => item.status !== 'pending..' && item.status !== 'served') ? (
+                      <Button
+                        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full"
+                        variant="contained"
+                        onClick={handleClick}
+                      >
+                        SEND ORDER
+                      </Button>
+                    ) : (
+                      <Typography variant="body1">NO MENU IN CART!!</Typography>
+                    )}
+                    <Snackbar open={open} autoHideDuration={4000} onClose={handleClose}>
+                      <Alert
+                        onClose={handleClose}
+                        severity="success"
+                        variant="filled"
+                        sx={{ width: "100%" }}
+                      >
+                        Your order is complete. Please wait to receive your food.
+                      </Alert>
+                    </Snackbar>
+                    <Snackbar
+                      open={alert !== ""}
+                      autoHideDuration={3000}
+                      onClose={() => setAlert("")}
+                      anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                    >
+                      <Alert onClose={() => setAlert("")} severity="error" sx={{ width: "100%" }}>
+                        {alert}
+                      </Alert>
+                    </Snackbar>
+                  </TableCell>
+                </TableRow>
+              </TableFooter>
+            </Table>
+          </TableContainer>
         </Grid>
-      </div>
-           
- 
+      </Grid>
+    </div>
+
+
     </>
   );
 };

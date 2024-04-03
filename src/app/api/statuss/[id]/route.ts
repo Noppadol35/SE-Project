@@ -7,11 +7,11 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const statusId = Number(params.id)
-    const statusWithPosts = await prisma..findUnique({
-      where: { id: statusId },
+    const statusID = Number(params.id)
+    const statusWithPosts = await prisma.status.findUnique({
+      where: { id: statusID },
       include: {
-        posts: true, // Include related posts in the response
+        table: true, // Include related posts in the response
       },
     })
     return Response.json(statusWithPosts)

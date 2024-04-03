@@ -69,9 +69,9 @@ export default function DeleteTable(props: DeleteTableProps) {
                         🗑️ Delete ?
                     </h2>
                     <p id="parent-modal-description" className=" m-3 ">
-                        {
-                            "👉🏻 Are you sure you want to delete this {table.name} ?"
-                        }
+                        
+                            👉🏻 Are you sure you want to delete this  {useTable.name} ?
+                        
                     </p>
                     <div>
                         <Button

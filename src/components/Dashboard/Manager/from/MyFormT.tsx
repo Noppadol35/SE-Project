@@ -37,8 +37,6 @@ const MyFormT = () => {
             await schema.validate(
                 {
                     name: inputName,
-                    capacity: inputCapacity,
-                    // role: inputStatus,
                 },
                 { abortEarly: false }
             );
@@ -52,26 +50,21 @@ const MyFormT = () => {
                     setTextErrorName(e.message);
                     setErrorName(true);
                 }
-                if (e.path === "capacity") {
-                    setTextErrorCapacity(e.message);
-                    setErrorCapacity(true);
-                }
             });
         }
 
         if (!errorName && !errorNumber && !errorCapacity) {
             console.log("Pass validation");
             console.log("Name: ", inputName);
-            console.log("Capacity: ", inputCapacity);
+
             // console.log("Status: ", inputStatus);
 
             try {
                 console.log("Submitting form");
-                
-                const res = await axios.post("/api/table", {
+
+                const res = await axios.post("/api/posts", {
                     name: inputName,
-                    capacity: inputCapacity,
-                    
+                    statusID: 1,
                 });
                 console.log("Response: ", res);
             } catch (error) {

@@ -45,19 +45,18 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: Request) {
     try{
-        const { name,capacity,statusId } = await request.json()
+        const { name,capacity,statusID } = await request.json()
         const newPost = await prisma.table.create({
             
             data: {
                 
                 name,
                 capacity,          
-                statusId: Number(statusId),
+                statusID: Number(statusID),
                 
             }
         })
         return Response.json(newPost)
-
     }catch (error) {
         return new Response(error as BodyInit, { 
             status: 500,

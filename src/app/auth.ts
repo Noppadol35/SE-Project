@@ -34,16 +34,6 @@ export const authOptions: NextAuthOptions = {
                 );
                 if (!valid) return null;
 
-                // const session = await getServerSession(authOptions);
-                // if (session) {
-                //     session.user.id = user.id;
-                //     session.user.name = user.name;
-                //     session.user.email = user.email;
-                //     session.user.role = user.role;
-
-                //     return session;
-                // }
-
                 return {
                     id: user.id,
                     name: user.name,

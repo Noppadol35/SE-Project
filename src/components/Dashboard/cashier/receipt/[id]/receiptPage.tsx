@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 'use client'
 
 import React, { useEffect, useState } from 'react';
@@ -208,3 +209,5 @@ const Receipt = ({ params }: { params: { id: string } }) => {
 }
 
 export default Receipt
+=======
+>>>>>>> 599b865 (Add new files and update imports)

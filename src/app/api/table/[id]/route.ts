@@ -41,3 +41,4 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
         return new Response(error as BodyInit, { status: 500 });
     }
 }
+

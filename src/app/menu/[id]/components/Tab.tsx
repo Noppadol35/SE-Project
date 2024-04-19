@@ -30,6 +30,7 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
     const { id } = params;
 
     const [menu, setMenu] = useState([]);
+<<<<<<< HEAD
 
     const [quantity, setQuantity] = useState("");
     const [menuID, setMenuID] = useState("");
@@ -52,11 +53,53 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
             );
 
             setname(res.data.name || "");
+=======
+    const [quantity, setQuantity] = useState("");
+    const [menuID, setMenuID] = useState("");
+    const [tableID, setTableID] = useState("");
+    const [category, setCategory] = useState("");
+    const [categories, setCategories] = useState([]);
+    const [quantities, setQuantities] = useState([]);
+    const [search, setSearch] = useState("");
+    const [sort, setSort] = useState("name");
+    const [name, setname] = useState("");
+
+    const fetchPostsTable = async (id: string) => {
+        try {
+            const res = await axios.get(
+                `http://localhost:3000/api/posts/${id}`
+            );
+
+            setname(res.data.name || "");
         } catch (error) {
             console.error(error);
         }
     };
 
+    const fetchMenu = async () => {
+        try {
+            const query = new URLSearchParams({ search, category }).toString();
+            const response = await axios.get(
+                `http://localhost:3000/api/menu?${query}`
+            );
+            setMenu(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+    const fetchCategories = async () => {
+        try {
+            const response = await axios.get(
+                `http://localhost:3000/api/categories`
+            );
+            setCategories(response.data);
+>>>>>>> 599b865 (Add new files and update imports)
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+<<<<<<< HEAD
     const fetchMenu = async () => {
         try {
             const query = new URLSearchParams({ search, category }).toString();
@@ -140,12 +183,42 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
         }
     };
 
+=======
+    const handleApplyFilters = () => {
+        fetchMenu();
+    };
+
+    useEffect(() => {
+        fetchPostsTable(id);
+        fetchMenu();
+        fetchCategories();
+    }, [id]);
+
+    const handleAddToCart = async (menuId: number) => {
+        try {
+            await axios.post("/api/Cart", {
+                menuID: menuId,
+                quantity: 1,
+                tableID: id, // ใช้ id จาก params
+            });
+            // แสดงข้อความแจ้งเตือนหรือทำการอื่น ๆ หลังจากเพิ่มรายการเสร็จสิ้น
+        } catch (error) {
+            console.error("Error adding to cart:", error);
+        }
+    };
+
+>>>>>>> 599b865 (Add new files and update imports)
     return (
         <div>
             <Grid container justifyContent="center">
                 <Grid item xs={12} md={8}>
+<<<<<<< HEAD
                     <div className="flex justify-center items-center mb-6 py-3">
                         <div className="flex gap-1">
+=======
+                    <div className="flex justify-between items-center mb-6">
+                        <div className="flex gap-111">
+>>>>>>> 599b865 (Add new files and update imports)
                             <input
                                 type="text"
                                 placeholder="Search by name.."
@@ -174,31 +247,50 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
                             </button>
                         </div>
                     </div>
+<<<<<<< HEAD
 
+=======
+>>>>>>> 599b865 (Add new files and update imports)
                     <TableContainer component={Paper}>
                         <Table stickyHeader aria-label="sticky table">
                             <TableHead>
                                 <TableRow>
                                     <TableCell>NAME</TableCell>
+<<<<<<< HEAD
                                     <TableCell align="left">CATEGORY</TableCell>
                                     <TableCell align="center">
                                         QUANTITY
                                     </TableCell>
+=======
+                                    <TableCell>CATEGORY</TableCell>
+                                    <TableCell>QUANTITY</TableCell>
+>>>>>>> 599b865 (Add new files and update imports)
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {menu.map((menu: any) => (
                                     <TableRow key={menu.id}>
+<<<<<<< HEAD
                                         <TableCell>
+=======
+                                        <TableCell
+                                        >
+>>>>>>> 599b865 (Add new files and update imports)
                                             <Typography variant="body1">
                                                 {menu.name}
                                             </Typography>
                                         </TableCell>
+<<<<<<< HEAD
                                         <TableCell align="left">
+=======
+                                        <TableCell
+                                        >
+>>>>>>> 599b865 (Add new files and update imports)
                                             <Typography variant="body1">
                                                 {menu.category.name}
                                             </Typography>
                                         </TableCell>
+<<<<<<< HEAD
                                         <TableCell align="center">
                                             <Box sx={{ minWidth: 120 }}>
                                                 <Button
@@ -208,13 +300,25 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
                                                             ? "bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full"
                                                             : "bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full"
                                                     }
+=======
+                                        <TableCell
+                                        >
+                                            <Box sx={{ minWidth: 120 }}>
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+>>>>>>> 599b865 (Add new files and update imports)
                                                     onClick={() =>
                                                         handleAddToCart(menu.id)
                                                     }
                                                 >
+<<<<<<< HEAD
                                                     {isInCartMap[menu.id]
                                                         ? "Remove from Cart"
                                                         : "Add to Cart"}
+=======
+                                                    Add to Cart
+>>>>>>> 599b865 (Add new files and update imports)
                                                 </Button>
                                             </Box>
                                         </TableCell>

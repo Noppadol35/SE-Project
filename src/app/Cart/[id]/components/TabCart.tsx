@@ -20,6 +20,10 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 599b865 (Add new files and update imports)
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
@@ -47,7 +51,10 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
   const [quantities, setQuantities] = useState([])
   const [search, setSearch] = useState('')
   const router = useRouter();
+<<<<<<< HEAD
 
+=======
+>>>>>>> 599b865 (Add new files and update imports)
   const [totals, setTotals] = useState<{ [key: string]: number }>({});
   const [open, setOpen] = React.useState(false);
   const [orderSent, setOrderSent] = useState(false);
@@ -236,7 +243,11 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
   };
 
   return (
+<<<<<<< HEAD
     <><div >
+=======
+    <><div>
+>>>>>>> 599b865 (Add new files and update imports)
       <Grid container justifyContent="center">
         <Grid item xs={12} md={8}>
 
@@ -247,12 +258,20 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
 
               <TableHead>
                 <TableRow >
+<<<<<<< HEAD
                   <TableCell align="center" colSpan={5}>YOUR ORDER</TableCell>
+=======
+                      <TableCell align="center" colSpan={3}>YOUR ORDER</TableCell>        
+>>>>>>> 599b865 (Add new files and update imports)
                 </TableRow>
                 <TableRow>
                   <TableCell align="center">QUANTITY</TableCell>
                   <TableCell align="center">NAME</TableCell>
+<<<<<<< HEAD
                   <TableCell align="center" colSpan={2}>ADD/DEL</TableCell>
+=======
+                  <TableCell align="center">DELETE</TableCell>
+>>>>>>> 599b865 (Add new files and update imports)
                   <TableCell align="center">STATUS</TableCell>
                 </TableRow>
               </TableHead>
@@ -274,8 +293,11 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
                     <TableCell align="center">
                       <Typography variant="body1">{menuName}</Typography>
                     </TableCell>
+<<<<<<< HEAD
 
                     {/* ///////// ADD BUTTONS ////////// */}
+=======
+>>>>>>> 599b865 (Add new files and update imports)
                     <TableCell align="center">
                       <Button
                         disabled={status === "pending.." || status === "served"}
@@ -310,6 +332,7 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
               </TableBody>
 
               <TableFooter>
+<<<<<<< HEAD
 
                 <TableRow >
                   <TableCell align="center" colSpan={5}>DETAIL</TableCell>
@@ -318,6 +341,40 @@ const StickyHeadTable = ({ params }: { params: { id: string } }) => {
                   <TableCell align="center" colSpan={3}>NAME</TableCell>
                   <TableCell align="center" colSpan={2}>QTY.</TableCell>
                 </TableRow>
+=======
+                
+                  <TableRow >
+                      <TableCell align="center" colSpan={4}>DETAIL</TableCell>        
+                  </TableRow>
+                  <TableRow>
+                      <TableCell align="center" colSpan={2}>NAME</TableCell>
+                      <TableCell align="center" colSpan={2}>QTY.</TableCell>     
+                  </TableRow>
+                
+                  
+                    {Object.entries(totals).map(([menuName, total]) => (
+                      <TableRow key={menuName}>
+                        <TableCell align="center"  colSpan={2}>
+                          <Typography variant="body1" >{menuName}</Typography>
+                        </TableCell>
+                        <TableCell align="center" colSpan={2}>
+                          <Typography variant="body1">{total}</Typography>
+                        </TableCell>     
+                      </TableRow>
+                    ))}
+
+                 <TableRow>
+                  <TableCell align="center" colSpan={4}>
+                        <Button sx={{
+                          background: "#a7d180",
+                          border: "1px solid #ADBC9F",
+                          p: 3,
+                          "&:hover": {
+                            bgcolor: "#7e946a",
+                        }}}
+                          variant="contained"
+                          onClick={handleClick} >
+>>>>>>> 599b865 (Add new files and update imports)
 
 
                 {Object.entries(totals).map(([menuName, total]) => (

@@ -6,7 +6,7 @@ import * as yup from "yup";
 import axios from "axios";
 
 const MyFormT = () => {
-    const schema = yup.object().shape({
+        const schema = yup.object().shape({
         name: yup
             .string()
             .required("Name is required")
@@ -93,17 +93,6 @@ const MyFormT = () => {
                 helperText={textErrorCapacity}
                 sx={{ width: "300px", marginBottom: "10px" }}
             />
-            {/* <Select
-                value={inputStatus}
-                label="Status*"
-                onChange={(e) => setInputStatus(e.target.value)}
-            >
-                <MenuItem value={"IDLE"} selected>
-                    IDLE
-                </MenuItem>
-                <MenuItem value={"EATTING"}>EATTING</MenuItem>
-                <MenuItem value={"PAID"}>PAID</MenuItem>
-            </Select> */}
             <br />
             <br />
             <Button type="submit" variant="outlined">

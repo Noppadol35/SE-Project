@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 'use client'
 
 import React, { useEffect, useState } from 'react'
@@ -6,46 +5,21 @@ import axios from 'axios'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import { Suspense } from 'react'
-// import PrintQRCodeModal from './component/printqrcode'
+// ===========================[MUI material & Icon]============================
+import { Alert, 
+        AlertTitle, 
+        FormControl, 
+        FormLabel, 
+        Box, 
+        Grid, 
+        Typography, 
+        Button, 
+        CssBaseline, 
+        Modal, TextField, Radio, RadioGroup, FormControlLabel, Dialog, DialogActions, DialogTitle} 
+    from "@mui/material";
+import {PointOfSaleIcon, TableRestaurantIcon, CloseIcon, QrCodeIcon, PointOfSaleIcon} from '@mui/icons-material/PointOfSale';
 
-
-
-import CssBaseline from '@mui/material/CssBaseline';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import TableRestaurantIcon from '@mui/icons-material/TableRestaurant';
-import Modal from '@mui/material/Modal';
-import CloseIcon from '@mui/icons-material/Close';
-import QrCodeIcon from '@mui/icons-material/QrCode';
-import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
-import Navbar from '@/components/Dashboard/Chef/components/Navbar'
-
-
-=======
-"use client";
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { useRouter } from "next/navigation";
-import CssBaseline from "@mui/material/CssBaseline";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import TableRestaurantIcon from "@mui/icons-material/TableRestaurant";
-import QrCodeIcon from "@mui/icons-material/QrCode";
-import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
-import TextField from "@mui/material/TextField";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogTitle from "@mui/material/DialogTitle";
-import { Alert, AlertTitle, FormControl, FormLabel } from "@mui/material";
->>>>>>> 599b865 (Add new files and update imports)
-
+// ===========================[Import Components]============================
 import { TableEntity } from "@/types/entity";
 import Navbar from "@/components/Dashboard/Chef/components/Navbar";
 
@@ -65,12 +39,10 @@ const buttonStyle = {
     },
 };
 
-<<<<<<< HEAD
 
 export default function Home() {
   const [posts, setPosts] = useState([])
-=======
-const Home = () => {
+    const Home = () => {
     const router = useRouter();
     const [name, setname] = useState("");
     // const [data, setData] = useState([]);
@@ -88,7 +60,6 @@ const Home = () => {
             setPosts(res.data);
         };
         fetch();
->>>>>>> 599b865 (Add new files and update imports)
 
         console.log(posts);
     }, []);
@@ -105,7 +76,6 @@ const Home = () => {
             );
             setOpen(false);
 
-<<<<<<< HEAD
 
   const getTableColor = (status: string) => {
     return status === 'EATING' ? '#FF0000' : '#00FF00';
@@ -238,7 +208,6 @@ const Home = () => {
     </Box>
   );
 }
-=======
             window.open(`http://localhost:3000/dashboard/cashier/receipt/${sideId}`, "_blank");
         } catch (error) {
             console.error(error);
@@ -567,4 +536,3 @@ const Home = () => {
 };
 
 export default Home;
->>>>>>> 599b865 (Add new files and update imports)

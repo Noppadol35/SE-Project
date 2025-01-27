@@ -71,7 +71,7 @@ export default function EditTable(props: EditTableProps) {
             setStatus(res.data.statusID || "");
         });
         console.log(statuss);
-    }, [props.userTable.id]);
+    }, [props.userTable.id, statuss]);
 
     React.useEffect(() => {
         axios.get(`http://localhost:3000/api/statuss/`).then((res) => {
@@ -79,7 +79,7 @@ export default function EditTable(props: EditTableProps) {
 
         });
         console.log(statuss);
-    }, []);
+    }, [statuss]);
 
     const handleSubmit = async (event: any) => {
         event.preventDefault();

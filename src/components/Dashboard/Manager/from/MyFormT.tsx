@@ -37,6 +37,7 @@ const MyFormT = () => {
             await schema.validate(
                 {
                     name: inputName,
+                    capacity: inputCapacity,
                 },
                 { abortEarly: false }
             );
@@ -50,12 +51,17 @@ const MyFormT = () => {
                     setTextErrorName(e.message);
                     setErrorName(true);
                 }
+                if (e.path === "capacity") {
+                    setTextErrorCapacity(e.message);
+                    setErrorCapacity(true);
+                }
             });
         }
 
         if (!errorName && !errorNumber && !errorCapacity) {
             console.log("Pass validation");
             console.log("Name: ", inputName);
+            console.log("Capacity: ", inputCapacity);
 
             // console.log("Status: ", inputStatus);
 
@@ -71,6 +77,7 @@ const MyFormT = () => {
                 console.error("Error while submitting form:", error);
             }
             setInputName("");
+            setInputCapacity(0);
         }
     };
 

@@ -70,7 +70,7 @@ export default function EditMenu(props: EditMenuProps) {
             setCategoryID(res.data.categoryID || "");
         });
         console.log(name);
-    }, [props.menuData.id]);
+    }, [props.menuData.id, name]);
 
     React.useEffect(() => {
         axios.get(`http://localhost:3000/api/categories/`).then((res) => {
@@ -78,7 +78,7 @@ export default function EditMenu(props: EditMenuProps) {
 
         });
         console.log(setCategories);
-    }, []);
+    }, [setCategories]);
     const handleSubmit = async (event: any) => {
         event.preventDefault();
         try {

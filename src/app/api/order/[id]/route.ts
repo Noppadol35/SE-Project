@@ -44,7 +44,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         status,
       },
     });
-    return { json: updateorder };
+    return new Response(JSON.stringify(updateorder));
   } catch (error) {
     return new Response(error as BodyInit, {
       status: 500,

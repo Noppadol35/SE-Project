@@ -11,27 +11,27 @@ interface UserRequest {
   phone: string;
 }
 
-  export async function POST(request: Request) {
-    try {
-      const { name, email, password, phone }: UserRequest = await request.json();
-      const hashedPassword = await bcrypt.hash(password, 10);
+export async function POST(request: Request) {
+  try {
+    const { name, email, password, phone }: UserRequest = await request.json();
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-      const newUser = await prisma.user.create({
-        data: {
-          name,
-          email,
-          password: hashedPassword,
-          phone,
-        },
-      });
+    const newUser = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        phone,
+      },
+    });
 
-      return NextResponse.json({ message: "User created", newUser });
-    } catch (error) {
-      console.error(error);
+    return NextResponse.json({ message: "User created", newUser });
+  } catch (error) {
+    console.error(error);
 
-      return NextResponse.json(
-        { message: "Something went wrong" },
-        { status: 500 }
-      );
-    }
+    return NextResponse.json(
+      { message: "Something went wrong" },
+      { status: 500 }
+    );
   }
+}

@@ -10,6 +10,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import Image from 'next/image';
 
 
 
@@ -24,38 +25,34 @@ const Receipt = ({ params }: { params: { id: string } }) => {
   const [priceperperson, setPricePerPerson] = useState(''); 
   const [total, setTotal] = useState('');
   const [bill, setBill] = useState('');
-   const [people, setPeople] = useState('');
+  const [people, setPeople] = useState('');
 
-
-
-
-  const fetchBill = async () => {
-    try {
-      const res = await axios.get(`/api/bill/${id}`);
-      setname(res.data.table.name);
-      setPeople(res.data.people);
-      setTotal(res.data.total);
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  useEffect(() => {
+    const fetchBill = async () => {
+      try {
+        const res = await axios.get(`/api/bill/${id}`);
+        setname(res.data.table.name);
+        setPeople(res.data.people);
+        setTotal(res.data.total);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
     const fetchPostsTable = async (id: string) => {
-        try {
+      try {
         const res = await axios.get(`/api/posts/${id}`)
         setname(res.data.name || '')
         setCapacity(res.data.capacity)
         setPricePerPerson(res.data.priceperperson || '');
-        } catch (error) {
+      } catch (error) {
         console.error(error)
-        }
-    }
-  useEffect(() => {
-   
-    fetchPostsTable(id)
-    fetchBill()   
-    
-  }, [id])
+      }
+    };
+
+    fetchPostsTable(id);
+    fetchBill();
+  }, [id]);
 
   
   const handleClose = () => {
@@ -101,7 +98,7 @@ const Receipt = ({ params }: { params: { id: string } }) => {
                 </Box>
                 <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                 <Typography variant="h3" component="h2">
-                  <img src="https://promptpay.io/0868681682.png" alt="PromptPay QR Code" />
+                  <Image src="https://promptpay.io/0868681682.png" alt="PromptPay QR Code" width={200} height={200} />
                 </Typography>
                 </Box>
 

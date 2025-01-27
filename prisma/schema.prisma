@@ -91,13 +91,6 @@ model Menu {
   cart       Cart[]
   order      Order[]
 }
-
-// enum Category {
-//   FOOD
-//   DRINK
-//   DESSERT
-// }
-
 model Category {
   id    Int    @id @default(autoincrement())
   name  String @unique

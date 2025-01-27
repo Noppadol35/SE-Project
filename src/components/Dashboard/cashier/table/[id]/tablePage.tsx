@@ -279,11 +279,11 @@ const Edit = ({ params }: { params: { id: string } }) => {
                 )}    
               <RadioGroup
                 value={statusID}
-                
                 onChange={(e) => setStatusId(e.target.value)}
               >
                 {statuss.map((sta: any) => (
                   <FormControlLabel
+                    key={sta.id} // Add key prop
                     value={sta.id}
                     label={sta.name}
                     control={<Radio />}

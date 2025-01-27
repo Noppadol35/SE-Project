@@ -7,7 +7,7 @@ import Tab from "./components/Tab";
 import NavbarMenu from "./components/NavbarMenu";
 import exp from "constants";
 
-const mainmenu = ({ params }: { params: { id: string } }) => {
+const MainMenu = ({ params }: { params: { id: string } }) => {
   const { id } = params;
   const router = useRouter();
   const [name, setname] = useState("");
@@ -42,4 +42,4 @@ const mainmenu = ({ params }: { params: { id: string } }) => {
   );
 }
 
-export default mainmenu;
+export default MainMenu;

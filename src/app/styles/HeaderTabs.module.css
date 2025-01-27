@@ -1,4 +1,6 @@
+
 .header {
+    @apply pt-4 bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-transparent mb-[-1px];
     padding-top: var(--mantine-spacing-sm);
     background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
     border-bottom: rem(1px) solid light-dark(var(--mantine-color-gray-2), transparent);
@@ -6,10 +8,12 @@
 }
 
 .mainSection {
+    @apply pb-4;
     padding-bottom: var(--mantine-spacing-sm);
 }
 
 .user {
+    @apply text-black dark:text-white px-2 py-1 rounded transition-colors hover:bg-gray-200 dark:hover:bg-gray-700;
     color: light-dark(var(--mantine-color-black), var(--mantine-color-dark-0));
     padding: var(--mantine-spacing-xs) var(--mantine-spacing-sm);
     border-radius: var(--mantine-radius-sm);
@@ -25,6 +29,7 @@
 }
 
 .userActive {
+    @apply bg-gray-200 dark:bg-gray-700;
     background-color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-8));
 }
 
@@ -35,6 +40,7 @@
 }
 
 .tab {
+    @apply font-medium h-9 relative bg-transparent;
     font-weight: 500;
     height: rem(38);
     background-color: transparent;

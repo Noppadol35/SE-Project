@@ -19,6 +19,7 @@ export async function POST(request: Request) {
             data: {
                 name: body.name,
                 capacity: body.capacity,
+                status: body.status,
 
             },
         });

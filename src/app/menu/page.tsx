@@ -7,7 +7,9 @@ export default function mainmenu() {
   return (
     <div>
       <NavbarMenu params={{id: ""}} />
-      <Tab />
+      <Tab params={{
+        id: ""
+      }} />
     </div>
   );
 }

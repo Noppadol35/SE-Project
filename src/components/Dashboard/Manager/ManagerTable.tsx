@@ -25,7 +25,7 @@ export function UserTable() {
             setRows(res.data);
         });
         console.log(rows);
-    }, []);
+    }, [rows]);
 
     const [open, setOpen] = React.useState(false);
 
@@ -43,7 +43,7 @@ export function UserTable() {
             
         });
         console.log(statuss);
-    }, []);
+    }, [statuss]);
     
     React.useEffect(() => {
         const interval = setInterval(() => {
